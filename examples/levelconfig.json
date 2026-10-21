@@ -1,0 +1,21 @@
+[
+  {
+    "id": 1,
+    "thumbnail": "geometric-mosaic",
+    "type": 1,
+    "difficulty": 1,
+    "pixelImageId": 1,
+    "widthHeight": [
+      24,
+      24
+    ],
+    "storageMaxSlots": 7,
+    "storageCols": 7,
+    "storageInitialSlots": 5,
+    "adUnlockIncrement": 1,
+    "initialTimeLimit": 300,
+    "adTimeIncrement": 30,
+    "reviveCount": 1,
+    "propConfigs": []
+  }
+]
