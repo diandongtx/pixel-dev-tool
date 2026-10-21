@@ -113,4 +113,25 @@ write('examples/geometric-mosaic.png', png(240, 240, (x, y) => {
   const value = matrix[Math.floor(y / 10)][Math.floor(x / 10)]
   return value < 0 ? transparent : [...rgb(colors[value]), 255]
 }))
-console.log('Generated geometric samples, six bead colors and debug layers.')
+// A recognizable flower drawn from circles and rectangles, with no image input.
+const flowerMatrix = Array.from({ length: 24 }, (_, y) => Array.from({ length: 24 }, (_, x) => {
+  let color = -2
+  if (x >= 11 && x <= 12 && y >= 10 && y <= 21) color = 2
+  if (((x - 8) / 3) ** 2 + ((y - 16) / 1.8) ** 2 <= 1) color = 2
+  if (((x - 15) / 3) ** 2 + ((y - 18) / 1.8) ** 2 <= 1) color = 2
+  for (let petal = 0; petal < 8; petal += 1) {
+    const angle = petal * Math.PI / 4
+    const dx = x - (11.5 + Math.cos(angle) * 4.5)
+    const dy = y - (8 + Math.sin(angle) * 4.5)
+    if (dx * dx + dy * dy <= 8) color = petal % 2 === 0 ? 0 : 4
+  }
+  if ((x - 11.5) ** 2 + (y - 8) ** 2 <= 8) color = 1
+  return color
+}))
+const flower = { ...grid, colorIndices: flowerMatrix, fileName: 'pixel-flower' }
+json('examples/pixel-flower-map.json', flower)
+write('examples/pixel-flower.png', png(240, 240, (x, y) => {
+  const value = flowerMatrix[Math.floor(y / 10)][Math.floor(x / 10)]
+  return value < 0 ? transparent : [...rgb(colors[value]), 255]
+}))
+console.log('Generated mosaic and flower samples, six bead colors and debug layers.')

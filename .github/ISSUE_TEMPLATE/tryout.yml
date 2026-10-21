@@ -1,0 +1,47 @@
+name: First-run feedback / 首次试用反馈
+description: Tell us whether you completed a real pixel-to-level workflow.
+title: "[Tryout] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English or Chinese is welcome. A failed attempt is useful feedback too.
+        请只上传可以公开的素材；不要粘贴密钥、内部路径或私有关卡。
+  - type: input
+    id: environment
+    attributes:
+      label: Environment / 运行环境
+      placeholder: Windows 11, Chrome, Node 22, v0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: How far did you get? / 完成到哪一步？
+      options:
+        - Could not start / 无法启动
+        - Imported an image or grid / 已导入图片或网格
+        - Edited pixels and previewed beads / 已编辑并预览
+        - Generated and exported a starting layout / 已生成并导出布局
+        - Saved or exported a level configuration / 已保存或导出关卡配置
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Your task and input / 用途和输入
+      description: Describe what you wanted to make; mention whether you used the sample or your own public-safe image.
+    validations:
+      required: true
+  - type: textarea
+    id: feedback
+    attributes:
+      label: What worked or blocked you? / 有用的地方或卡住的步骤
+      description: Include steps, expected behavior, and actual behavior. Screenshots are optional.
+    validations:
+      required: true
+  - type: textarea
+    id: next
+    attributes:
+      label: One improvement / 最希望改进的一点

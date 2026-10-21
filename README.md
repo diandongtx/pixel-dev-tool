@@ -33,6 +33,8 @@ Use `npm run dev` for the complete application. The local filesystem API is prov
 
 ## Try the examples
 
+Follow the [first-run walkthrough](docs/TRYOUT.md), watch the [60-second screenshot walkthrough](https://github.com/diandongtx/pixel-dev-tool/releases/download/v0.1.0/pixel-dev-tool-walkthrough.mp4), or submit [tryout feedback](https://github.com/diandongtx/pixel-dev-tool/issues/new?template=tryout.yml).
+
 1. On **像素化页面**, select `examples/geometric-mosaic.png`; its source cells are 10 × 10 pixels.
 2. On **关卡工作台**, import `examples/geometric-mosaic-map.json` to try matching against the bundled six-color bead catalog.
 3. On **像素图管理**, import `examples/pixelconfig.json`. On **主线关卡管理**, import `examples/levelconfig.json` to inspect the matching level. Use the page's save action when you want to persist imported data.

@@ -35,6 +35,8 @@ npm run dev
 
 ## 第一次体验
 
+完整步骤见 [首次试用教程](docs/TRYOUT.zh-CN.md)。[观看 60 秒截图演示](https://github.com/diandongtx/pixel-dev-tool/releases/download/v0.1.0/pixel-dev-tool-walkthrough.mp4)，或通过 [试用反馈表](https://github.com/diandongtx/pixel-dev-tool/issues/new?template=tryout.yml) 告诉我们卡在哪一步。
+
 1. 在「像素化页面」选择 `examples/geometric-mosaic.png`，示例原图每格为 10 × 10 像素。
 2. 在「关卡工作台」导入 `examples/geometric-mosaic-map.json`，体验随项目提供的六色拼豆资源匹配。
 3. 在「像素图管理」导入 `examples/pixelconfig.json`，再到「主线关卡管理」导入 `examples/levelconfig.json`。需要写入本地工作区时，使用页面上的保存操作。

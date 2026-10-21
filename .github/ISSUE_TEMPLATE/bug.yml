@@ -1,0 +1,28 @@
+name: Bug report / 问题反馈
+description: Report a reproducible problem with a small public-safe example.
+title: "[Bug] "
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: Version, OS, browser, Node / 版本与环境
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps and input / 复现步骤与输入
+      description: Include a seed for generation issues. Use synthetic or authorized input only.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior / 预期与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Screenshots or logs / 截图或日志
+      description: Remove tokens, private paths, and confidential content before posting.
