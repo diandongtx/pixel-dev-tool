@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import type { ThemeConfigFile } from '../types/themeConfig'
 
 export const DEFAULT_THEME_CONFIG: ThemeConfigFile = [
@@ -18,3 +19,9 @@ export const sortThemeConfig = (items: ThemeConfigFile): ThemeConfigFile =>
   [...items].sort((left, right) =>
     left.sortOrder - right.sortOrder || left.theme.localeCompare(right.theme)
   )
+
+/** Translate only unchanged built-in labels; custom theme names are user data. */
+export function themeDisplayName(item: ThemeConfigFile[number]): string {
+  const builtin = DEFAULT_THEME_CONFIG.find((theme) => theme.theme === item.theme)
+  return builtin?.themeName === item.themeName ? t(item.themeName) : item.themeName
+}

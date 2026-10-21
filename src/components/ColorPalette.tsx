@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import React, { useRef } from 'react';
 
 interface ColorPaletteProps {
@@ -13,7 +14,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
   onColorChange,
   recentColors,
   defaultColors: providedDefaultColors,
-  defaultColorsTitle = '默认颜色',
+  defaultColorsTitle = t("默认颜色"),
 }) => {
   const colorInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +40,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
           className="color-preview"
           style={{ backgroundColor: currentColor }}
           onClick={handleColorPickerClick}
-          title="点击打开颜色选择器"
+          title={t("点击打开颜色选择器")}
         />
         <input
           ref={colorInputRef}
@@ -51,7 +52,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
       </div>
 
       <div className="color-section">
-        <h4>最近使用的颜色</h4>
+        <h4>{t("最近使用的颜色")}</h4>
         <div className="color-grid">
           {recentColors.map((color, index) => (
             <div

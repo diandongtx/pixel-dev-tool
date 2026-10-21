@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import React, { useEffect, useRef, useState } from 'react'
 import type { GridData } from '../types/grid'
 import { buildPointFilename, deriveAssetBaseName, downloadTextFile } from '../utils/configIO'
@@ -123,9 +124,7 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
               value="regionRecolor"
               checked={sortMode === 'regionRecolor'}
               onChange={() => setSortMode('regionRecolor')}
-            />
-            区域重染色（默认）
-          </label>
+            />{t("区域重染色（默认）")}</label>
           <label>
             <input
               type="radio"
@@ -133,9 +132,7 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
               value="structure"
               checked={sortMode === 'structure'}
               onChange={() => setSortMode('structure')}
-            />
-            结构感知
-          </label>
+            />{t("结构感知")}</label>
           <label>
             <input
               type="radio"
@@ -143,14 +140,12 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
               value="legacy"
               checked={sortMode === 'legacy'}
               onChange={() => setSortMode('legacy')}
-            />
-            传统（legacy）
-          </label>
+            />{t("传统（legacy）")}</label>
         </div>
 
         {sortMode === 'regionRecolor' && (
           <>
-            <label htmlFor="rrMinRegionSizeInput">小区域并入阈值</label>
+            <label htmlFor="rrMinRegionSizeInput">{t("小区域并入阈值")}</label>
             <input
               id="rrMinRegionSizeInput"
               type="number"
@@ -166,7 +161,7 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
                 setRrMinRegionSize(Math.min(64, Math.max(1, parsed)))
               }}
             />
-            <label htmlFor="rrMaxBlockSizeInput">单块上限（0=不限）</label>
+            <label htmlFor="rrMaxBlockSizeInput">{t("单块上限（0=不限）")}</label>
             <input
               id="rrMaxBlockSizeInput"
               type="number"
@@ -181,11 +176,11 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
                 setRrMaxBlockSize(Math.max(0, parsed))
               }}
             />
-            <label htmlFor="sortSeedInput">seed（留空=随机）</label>
+            <label htmlFor="sortSeedInput">{t("seed（留空=随机）")}</label>
             <input
               id="sortSeedInput"
               type="number"
-              placeholder="随机"
+              placeholder={t("随机")}
               value={sortSeedInput}
               onChange={(event) => setSortSeedInput(event.target.value)}
             />
@@ -194,7 +189,7 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
 
         {sortMode === 'legacy' && (
           <>
-            <label htmlFor="targetBlockCountInput">目标色块数</label>
+            <label htmlFor="targetBlockCountInput">{t("目标色块数")}</label>
             <input
               id="targetBlockCountInput"
               type="number"
@@ -209,7 +204,7 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
                 setTargetBlockCount(Math.max(1, parsed))
               }}
             />
-            <label htmlFor="overflowConstraintInput">溢出约束</label>
+            <label htmlFor="overflowConstraintInput">{t("溢出约束")}</label>
             <input
               id="overflowConstraintInput"
               type="number"
@@ -230,17 +225,17 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
 
         {sortMode === 'structure' && (
           <>
-            <label htmlFor="sizeProfileInput">手感档位</label>
+            <label htmlFor="sizeProfileInput">{t("手感档位")}</label>
             <select
               id="sizeProfileInput"
               value={sizeProfile}
               onChange={(event) => setSizeProfile(event.target.value as SizeProfileName)}
             >
-              <option value="loose">松（大块爽感）</option>
-              <option value="standard">标准</option>
-              <option value="tight">紧（决策密度高）</option>
+              <option value="loose">{t("松（大块爽感）")}</option>
+              <option value="standard">{t("标准")}</option>
+              <option value="tight">{t("紧（决策密度高）")}</option>
             </select>
-            <label htmlFor="structureAffinityInput">预期强度 α：{structureAffinity.toFixed(2)}</label>
+            <label htmlFor="structureAffinityInput">{t("预期强度 α：")}{structureAffinity.toFixed(2)}</label>
             <input
               id="structureAffinityInput"
               type="range"
@@ -250,7 +245,7 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
               value={structureAffinity}
               onChange={(event) => setStructureAffinity(Number.parseFloat(event.target.value))}
             />
-            <label htmlFor="smallBlockQuotaInput">小块配额</label>
+            <label htmlFor="smallBlockQuotaInput">{t("小块配额")}</label>
             <input
               id="smallBlockQuotaInput"
               type="number"
@@ -267,88 +262,75 @@ export const BeadLevelPage: React.FC<BeadLevelPageProps> = ({ processedGridData,
                 setSmallBlockQuota(Math.min(1, Math.max(0, parsed)))
               }}
             />
-            <label htmlFor="sortSeedInput">seed（留空=随机）</label>
+            <label htmlFor="sortSeedInput">{t("seed（留空=随机）")}</label>
             <input
               id="sortSeedInput"
               type="number"
-              placeholder="随机"
+              placeholder={t("随机")}
               value={sortSeedInput}
               onChange={(event) => setSortSeedInput(event.target.value)}
             />
           </>
         )}
 
-        <button type="button" onClick={handleGenerateSortedGrid} disabled={!processedGridData}>
-          生成排序
-        </button>
-        <button type="button" onClick={handleDownloadSortedGrid} disabled={!sortedGridData}>
-          下载排序后网格
-        </button>
+        <button type="button" onClick={handleGenerateSortedGrid} disabled={!processedGridData}>{t("生成排序")}</button>
+        <button type="button" onClick={handleDownloadSortedGrid} disabled={!sortedGridData}>{t("下载排序后网格")}</button>
       </div>
 
       {sortMode === 'regionRecolor' && regionRecolorResult && (
         <div className="bead-level-metrics">
           <span className={regionRecolorResult.passed ? 'metric-pass' : 'metric-fail'}>
-            {regionRecolorResult.passed ? '✓ 全部达标' : '△ 未达标（已返回最优一次）'}
+            {regionRecolorResult.passed ? t("✓ 全部达标") : t("△ 未达标（已返回最优一次）")}
           </span>
           <span>seed: {regionRecolorResult.usedSeed}</span>
-          <span>尝试: {regionRecolorResult.attempts}</span>
-          <span>策略: {regionRecolorResult.metrics.allocStrategy === 'matched' ? '最小溢出匹配' : '配额倾倒'}</span>
+          <span>{t("尝试:")}{' '}{regionRecolorResult.attempts}</span>
+          <span>{t("策略:")}{' '}{regionRecolorResult.metrics.allocStrategy === 'matched' ? t("最小溢出匹配") : t("配额倾倒")}</span>
           <span>fixedFloor: {(regionRecolorResult.metrics.fixedFloor * 100).toFixed(0)}%</span>
-          <span className={regionRecolorResult.metrics.contourPreservation >= 0.75 ? 'metric-pass' : 'metric-fail'}>
-            R1 轮廓保留 {regionRecolorResult.metrics.contourPreservation.toFixed(2)}
+          <span className={regionRecolorResult.metrics.contourPreservation >= 0.75 ? 'metric-pass' : 'metric-fail'}>{t("R1 轮廓保留")}{' '}{regionRecolorResult.metrics.contourPreservation.toFixed(2)}
           </span>
-          <span className={regionRecolorResult.metrics.regionPurity >= 0.80 ? 'metric-pass' : 'metric-fail'}>
-            区域纯度 {regionRecolorResult.metrics.regionPurity.toFixed(2)}
+          <span className={regionRecolorResult.metrics.regionPurity >= 0.80 ? 'metric-pass' : 'metric-fail'}>{t("区域纯度")}{' '}{regionRecolorResult.metrics.regionPurity.toFixed(2)}
           </span>
-          <span>区域数 {regionRecolorResult.metrics.regionCount}</span>
-          <span className={regionRecolorResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>
-            R2 小块占比 {(regionRecolorResult.metrics.smallBlockRatio * 100).toFixed(0)}%
+          <span>{t("区域数")}{' '}{regionRecolorResult.metrics.regionCount}</span>
+          <span className={regionRecolorResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>{t("R2 小块占比")}{' '}{(regionRecolorResult.metrics.smallBlockRatio * 100).toFixed(0)}%
           </span>
-          <span className={regionRecolorResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>
-            R3 尾串 {regionRecolorResult.metrics.greedyTailRun}
+          <span className={regionRecolorResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>{t("R3 尾串")}{' '}{regionRecolorResult.metrics.greedyTailRun}
           </span>
-          <span className={regionRecolorResult.metrics.fixedCellRatio <= rrAdaptiveFixedThreshold(regionRecolorResult.metrics.fixedFloor) ? 'metric-pass' : 'metric-fail'}>
-            R4 落原位 {(regionRecolorResult.metrics.fixedCellRatio * 100).toFixed(0)}%
+          <span className={regionRecolorResult.metrics.fixedCellRatio <= rrAdaptiveFixedThreshold(regionRecolorResult.metrics.fixedFloor) ? 'metric-pass' : 'metric-fail'}>{t("R4 落原位")}{' '}{(regionRecolorResult.metrics.fixedCellRatio * 100).toFixed(0)}%
           </span>
-          <span>拾取 {regionRecolorResult.metrics.pickupCount}</span>
+          <span>{t("拾取")}{' '}{regionRecolorResult.metrics.pickupCount}</span>
         </div>
       )}
 
       {sortMode === 'structure' && sortResult && (
         <div className="bead-level-metrics">
           <span className={sortResult.passed ? 'metric-pass' : 'metric-fail'}>
-            {sortResult.passed ? '✓ 全部达标' : '△ 未达标（已返回最优一次）'}
+            {sortResult.passed ? t("✓ 全部达标") : t("△ 未达标（已返回最优一次）")}
           </span>
           <span>seed: {sortResult.usedSeed}</span>
-          <span>尝试: {sortResult.attempts}</span>
-          <span className={sortResult.metrics.structureRetention >= 0.55 ? 'metric-pass' : 'metric-fail'}>
-            H1 结构保留 {sortResult.metrics.structureRetention.toFixed(2)}
+          <span>{t("尝试:")}{' '}{sortResult.attempts}</span>
+          <span className={sortResult.metrics.structureRetention >= 0.55 ? 'metric-pass' : 'metric-fail'}>{t("H1 结构保留")}{' '}{sortResult.metrics.structureRetention.toFixed(2)}
           </span>
-          <span className={sortResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>
-            H2 小块占比 {(sortResult.metrics.smallBlockRatio * 100).toFixed(0)}%
+          <span className={sortResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>{t("H2 小块占比")}{' '}{(sortResult.metrics.smallBlockRatio * 100).toFixed(0)}%
           </span>
-          <span className={sortResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>
-            H3 尾串 {sortResult.metrics.greedyTailRun}
+          <span className={sortResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>{t("H3 尾串")}{' '}{sortResult.metrics.greedyTailRun}
           </span>
-          <span className={sortResult.metrics.fixedCellRatio <= 0.50 ? 'metric-pass' : 'metric-fail'}>
-            H4 白送进度 {(sortResult.metrics.fixedCellRatio * 100).toFixed(0)}%
+          <span className={sortResult.metrics.fixedCellRatio <= 0.50 ? 'metric-pass' : 'metric-fail'}>{t("H4 白送进度")}{' '}{(sortResult.metrics.fixedCellRatio * 100).toFixed(0)}%
           </span>
-          <span>拾取 {sortResult.metrics.pickupCount}</span>
+          <span>{t("拾取")}{' '}{sortResult.metrics.pickupCount}</span>
         </div>
       )}
 
       {!processedGridData && (
-        <div className="bead-level-empty">请先在像素化页面生成或导入处理后网格数据</div>
+        <div className="bead-level-empty">{t("请先在像素化页面生成或导入处理后网格数据")}</div>
       )}
 
       <div className="bead-level-canvases">
         <div className="bead-grid-panel">
-          <h3>处理后网格</h3>
+          <h3>{t("处理后网格")}</h3>
           <canvas ref={processedCanvasRef} className="bead-grid-canvas" />
         </div>
         <div className="bead-grid-panel">
-          <h3>排序后网格</h3>
+          <h3>{t("排序后网格")}</h3>
           <canvas ref={sortedCanvasRef} className="bead-grid-canvas" />
         </div>
       </div>

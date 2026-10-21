@@ -1436,3 +1436,10 @@ button:disabled {
   font-size: 13px;
   font-style: italic;
 }
+
+.app-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.app-header h1 { margin: 0; }
+.language-control { display: flex; align-items: center; gap: .5rem; font-size: .9rem; }
+.language-control select { padding: .45rem; border-radius: 6px; border: 1px solid #bbb; background: #fff; color: #222; }
+.grid-size-control { flex-wrap: wrap; }
+.page-switch { flex-wrap: wrap; }

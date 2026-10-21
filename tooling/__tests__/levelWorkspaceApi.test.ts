@@ -330,7 +330,7 @@ describe('level workspace API handler', () => {
     )
     expect(htmlResponse.headers.get('Content-Type')).toBe('text/html; charset=utf-8')
     expect(htmlResponse.headers.get('Cache-Control')).toBe('no-store')
-    expect(String(htmlResponse.body)).toContain('主线关卡阅览')
+    expect(String(htmlResponse.body)).toContain('Main level review')
 
     const pngResponse = new TestResponse()
     await handler(
@@ -378,7 +378,7 @@ describe('level workspace API handler', () => {
 
     expect(response.statusCode).toBe(400)
     expect(JSON.parse(String(response.body))).toEqual({
-      error: '豆子资源目录不可用：resource/grid'
+      error: 'Bead resource directory is unavailable: resource/grid'
     })
   })
 

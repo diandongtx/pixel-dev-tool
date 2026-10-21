@@ -86,7 +86,7 @@ describe('main level review repository', () => {
       warnings: []
     })
     await expect(readFile(path.join(root!, 'output', 'main-level-review', 'index.html'), 'utf8'))
-      .resolves.toContain('主线关卡阅览')
+      .resolves.toContain('Main level review')
     await expect(readFile(path.join(
       root!,
       'output',
@@ -131,8 +131,8 @@ describe('main level review repository', () => {
     const result = await repository.generate(nestedOnlyRequest)
 
     expect(result.warnings).toEqual([
-      '关卡 1：颜色索引 0 缺少 nested-only_2.png',
-      '关卡 1：颜色索引 0 缺少 nested-only_3.png'
+      'Level 1: Color index 0 is missing nested-only_2.png',
+      'Level 1: Color index 0 is missing nested-only_3.png'
     ])
     await expect(readFile(path.join(
       root!,
@@ -169,7 +169,7 @@ describe('main level review repository', () => {
     )
     await rm(path.join(root!, 'resource', 'grid'), { recursive: true })
 
-    await expect(repository.generate(request)).rejects.toThrow('豆子资源目录不可用')
+    await expect(repository.generate(request)).rejects.toThrow('Bead resource directory is unavailable')
     await expect(readFile(
       path.join(root!, 'output', 'main-level-review', 'index.html'),
       'utf8'
@@ -184,7 +184,7 @@ describe('main level review repository', () => {
       levels: null,
       pixelConfigs: []
     } as unknown as MainLevelReviewGenerateRequest)).rejects.toThrow(
-      '关卡配置 levels 必须是数组'
+      'Level configuration levels must be an array'
     )
   })
 
@@ -513,6 +513,6 @@ describe('main level review repository', () => {
     const repository = await setup()
     await repository.generate(request)
 
-    await expect(repository.readPreviewFile(unsafePath)).rejects.toThrow('阅览资源路径越界')
+    await expect(repository.readPreviewFile(unsafePath)).rejects.toThrow('Review asset path is outside the review directory')
   })
 })

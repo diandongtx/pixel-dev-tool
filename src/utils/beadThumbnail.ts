@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import type { GridData } from '../types/grid'
 import type { BeadResourceCatalogItem } from './beadResourceCatalog'
 import type { BeadResourceMatch } from './beadResourceMatcher'
@@ -16,7 +17,7 @@ const loadDefaultImage = async (url: string): Promise<HTMLImageElement> =>
   await new Promise((resolve, reject) => {
     const image = new Image()
     image.onload = () => resolve(image)
-    image.onerror = () => reject(new Error(`缩略图资源加载失败：${url}`))
+    image.onerror = () => reject(new Error(t("缩略图资源加载失败：{0}", url)))
     image.src = url
   })
 
@@ -33,7 +34,7 @@ export const buildBeadThumbnailDataUrl = async (
 
   const context = canvas.getContext('2d')
   if (!context) {
-    throw new Error('缩略图 canvas 2D context 不可用')
+    throw new Error(t("缩略图 canvas 2D context 不可用"))
   }
 
   context.clearRect(0, 0, canvas.width, canvas.height)

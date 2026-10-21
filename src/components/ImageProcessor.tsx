@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { LevelProductionPreviewPanel } from './LevelProductionPreviewPanel'
 import {
@@ -403,7 +404,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
 
     const blob = await buildLevelResourcePreviewBlob(grid)
     if (!blob) {
-      window.alert('下载图片失败：当前浏览器无法生成预览图片。')
+      window.alert(t("下载图片失败：当前浏览器无法生成预览图片。"))
       return
     }
 
@@ -570,8 +571,8 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
       return null
     })
     setInternalPixelStatus(hasUsableInitPixel
-      ? `已载入内部像素图：${pixelConfig.name}，已有 initPixel，排序前/排序后预览已直接加载。`
-      : `已载入内部像素图：${pixelConfig.name}，索引矩阵保持原始编号。`)
+      ? t("已载入内部像素图：{0}，已有 initPixel，排序前/排序后预览已直接加载。", pixelConfig.name)
+      : t("已载入内部像素图：{0}，索引矩阵保持原始编号。", pixelConfig.name))
   }
 
   const filteredInternalPixelConfigs = useMemo(() => {
@@ -594,10 +595,10 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
       setInternalPixelConfigs(items)
       setInternalPixelPalettes(palettes)
       setSelectedInternalPixelId('')
-      setInternalPixelStatus(`已加载内部 pixelconfig，共 ${items.length} 个像素图。`)
+      setInternalPixelStatus(t("已加载内部 pixelconfig，共 {0} 个像素图。", items.length))
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error'
-      setInternalPixelStatus(`加载内部 pixelconfig 失败：${message}`)
+      setInternalPixelStatus(t("加载内部 pixelconfig 失败：{0}", message))
     }
   }
 
@@ -1189,7 +1190,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
     if (!hasExternalCell) {
       const hasEmptyCell = gridIndexMap.some((row) => row.includes(-2))
       if (!hasEmptyCell) {
-        window.alert('当前画布没有背景区域，也没有可填充的空位（-2）。\n可先用橡皮擦出空位、或扩大画布后再设置背景色。')
+        window.alert(t("当前画布没有背景区域，也没有可填充的空位（-2）。\n可先用橡皮擦出空位、或扩大画布后再设置背景色。"))
         return
       }
     }
@@ -1237,9 +1238,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
             id="imageInput"
             style={{ display: 'none' }}
           />
-          <label htmlFor="imageInput" className="button">
-            选择图片
-          </label>
+          <label htmlFor="imageInput" className="button">{t("选择图片")}</label>
         </div>
 
         <div className="file-input-group">
@@ -1250,9 +1249,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
             id="gridColorInput"
             style={{ display: 'none' }}
           />
-          <label htmlFor="gridColorInput" className="button">
-            选择Grid Color
-          </label>
+          <label htmlFor="gridColorInput" className="button">{t("选择Grid Color")}</label>
         </div>
 
         <button
@@ -1261,16 +1258,14 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
           onClick={() => {
             void handleLoadInternalPixels()
           }}
-        >
-          加载内部像素图
-        </button>
+        >{t("加载内部像素图")}</button>
         <input
           type="search"
           data-testid="internal-pixel-search"
           className="internal-pixel-search"
           value={internalPixelSearch}
           onChange={(event) => setInternalPixelSearch(event.target.value)}
-          placeholder="按名称 / 编号 / 主题搜索"
+          placeholder={t("按名称 / 编号 / 主题搜索")}
           disabled={internalPixelConfigs.length === 0}
         />
         <select
@@ -1279,7 +1274,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
           onChange={handleInternalPixelSelect}
           disabled={internalPixelConfigs.length === 0}
         >
-          <option value="">选择内部像素图</option>
+          <option value="">{t("选择内部像素图")}</option>
           {filteredInternalPixelConfigs.map((item) => (
             <option key={item.id} value={item.id}>
               {item.id} / {item.name} / {item.gridWidthHeight[0]}x{item.gridWidthHeight[1]}
@@ -1287,17 +1282,13 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
           ))}
         </select>
         {internalPixelConfigs.length > 0 && filteredInternalPixelConfigs.length === 0 ? (
-          <span className="internal-pixel-status">无匹配项</span>
+          <span className="internal-pixel-status">{t("无匹配项")}</span>
         ) : internalPixelStatus ? (
           <span className="internal-pixel-status">{internalPixelStatus}</span>
         ) : null}
 
-        <button onClick={handleDownloadGridColors} className="download-button">
-          下载网格颜色
-        </button>
-        <button onClick={handleDownloadSubjectGridColors} className="download-button">
-          下载主体网格颜色
-        </button>
+        <button onClick={handleDownloadGridColors} className="download-button">{t("下载网格颜色")}</button>
+        <button onClick={handleDownloadSubjectGridColors} className="download-button">{t("下载主体网格颜色")}</button>
       </div>
 
       <PixelGridEditorSurface
@@ -1319,18 +1310,14 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
         toolbarAfter={(
           <>
             {showGridSettingsButton ? (
-              <button type="button" onClick={handleUpdateGrid} className="update-button">
-                更新网格和色差
-              </button>
+              <button type="button" onClick={handleUpdateGrid} className="update-button">{t("更新网格和色差")}</button>
             ) : null}
             <button
               type="button"
               onClick={handleUpdateLevelPreview}
               className="update-button"
               disabled={!levelSortSourceGrid || !processedGridData}
-            >
-              更新关卡预览
-            </button>
+            >{t("更新关卡预览")}</button>
           </>
         )}
         onGridIndexMapChange={setGridIndexMap}
@@ -1346,7 +1333,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
       />
 
       <div className="level-production-preview-container">
-        <h3>关卡预览与草稿</h3>
+        <h3>{t("关卡预览与草稿")}</h3>
         {levelPreviewGrids ? (
           <div className="level-sort-panel" data-testid="level-production-sort-panel">
             <div className="level-sort-controls">
@@ -1358,9 +1345,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                     value="regionRecolor"
                     checked={levelSortMode === 'regionRecolor'}
                     onChange={() => setLevelSortMode('regionRecolor')}
-                  />
-                  区域重染色（默认）
-                </label>
+                  />{t("区域重染色（默认）")}</label>
                 <label>
                   <input
                     type="radio"
@@ -1368,9 +1353,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                     value="structure"
                     checked={levelSortMode === 'structure'}
                     onChange={() => setLevelSortMode('structure')}
-                  />
-                  结构感知
-                </label>
+                  />{t("结构感知")}</label>
                 <label>
                   <input
                     type="radio"
@@ -1378,14 +1361,12 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                     value="legacy"
                     checked={levelSortMode === 'legacy'}
                     onChange={() => setLevelSortMode('legacy')}
-                  />
-                  传统（legacy）
-                </label>
+                  />{t("传统（legacy）")}</label>
               </div>
 
               {levelSortMode === 'regionRecolor' && (
                 <>
-                  <label htmlFor="levelRrMinRegionSizeInput">小区域并入阈值</label>
+                  <label htmlFor="levelRrMinRegionSizeInput">{t("小区域并入阈值")}</label>
                   <input
                     id="levelRrMinRegionSizeInput"
                     type="number"
@@ -1397,7 +1378,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                       setLevelRrMinRegionSize(Number.isNaN(parsed) ? 4 : Math.min(64, Math.max(1, parsed)))
                     }}
                   />
-                  <label htmlFor="levelRrMaxBlockSizeInput">单块上限（0=不限）</label>
+                  <label htmlFor="levelRrMaxBlockSizeInput">{t("单块上限（0=不限）")}</label>
                   <input
                     id="levelRrMaxBlockSizeInput"
                     type="number"
@@ -1408,11 +1389,11 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                       setLevelRrMaxBlockSize(Number.isNaN(parsed) ? 0 : Math.max(0, parsed))
                     }}
                   />
-                  <label htmlFor="levelSortSeedInput">seed（留空=随机）</label>
+                  <label htmlFor="levelSortSeedInput">{t("seed（留空=随机）")}</label>
                   <input
                     id="levelSortSeedInput"
                     type="number"
-                    placeholder="随机"
+                    placeholder={t("随机")}
                     value={levelSortSeedInput}
                     onChange={(event) => setLevelSortSeedInput(event.target.value)}
                   />
@@ -1421,7 +1402,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
 
               {levelSortMode === 'legacy' && (
                 <>
-                  <label htmlFor="levelTargetBlockCountInput">目标色块数</label>
+                  <label htmlFor="levelTargetBlockCountInput">{t("目标色块数")}</label>
                   <input
                     id="levelTargetBlockCountInput"
                     type="number"
@@ -1432,7 +1413,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                       setTargetBlockCount(Number.isNaN(parsed) ? 1 : Math.max(1, parsed))
                     }}
                   />
-                  <label htmlFor="levelOverflowConstraintInput">约束强度</label>
+                  <label htmlFor="levelOverflowConstraintInput">{t("约束强度")}</label>
                   <input
                     id="levelOverflowConstraintInput"
                     type="number"
@@ -1449,17 +1430,17 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
 
               {levelSortMode === 'structure' && (
                 <>
-                  <label htmlFor="levelSizeProfileInput">手感档位</label>
+                  <label htmlFor="levelSizeProfileInput">{t("手感档位")}</label>
                   <select
                     id="levelSizeProfileInput"
                     value={levelSizeProfile}
                     onChange={(event) => setLevelSizeProfile(event.target.value as SizeProfileName)}
                   >
-                    <option value="loose">松（大块爽感）</option>
-                    <option value="standard">标准</option>
-                    <option value="tight">紧（决策密度高）</option>
+                    <option value="loose">{t("松（大块爽感）")}</option>
+                    <option value="standard">{t("标准")}</option>
+                    <option value="tight">{t("紧（决策密度高）")}</option>
                   </select>
-                  <label htmlFor="levelStructureAffinityInput">预期强度 α：{levelStructureAffinity.toFixed(2)}</label>
+                  <label htmlFor="levelStructureAffinityInput">{t("预期强度 α：")}{levelStructureAffinity.toFixed(2)}</label>
                   <input
                     id="levelStructureAffinityInput"
                     type="range"
@@ -1469,7 +1450,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                     value={levelStructureAffinity}
                     onChange={(event) => setLevelStructureAffinity(Number.parseFloat(event.target.value))}
                   />
-                  <label htmlFor="levelSmallBlockQuotaInput">小块配额</label>
+                  <label htmlFor="levelSmallBlockQuotaInput">{t("小块配额")}</label>
                   <input
                     id="levelSmallBlockQuotaInput"
                     type="number"
@@ -1482,11 +1463,11 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                       setLevelSmallBlockQuota(Number.isNaN(parsed) ? 0.10 : Math.min(1, Math.max(0, parsed)))
                     }}
                   />
-                  <label htmlFor="levelSortSeedInput">seed（留空=随机）</label>
+                  <label htmlFor="levelSortSeedInput">{t("seed（留空=随机）")}</label>
                   <input
                     id="levelSortSeedInput"
                     type="number"
-                    placeholder="随机"
+                    placeholder={t("随机")}
                     value={levelSortSeedInput}
                     onChange={(event) => setLevelSortSeedInput(event.target.value)}
                   />
@@ -1500,88 +1481,73 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                   type="checkbox"
                   checked={useSubjectGridForLevelSort}
                   onChange={(event) => setUseSubjectGridForLevelSort(event.target.checked)}
-                />
-                使用主体网格
-              </label>
+                />{t("使用主体网格")}</label>
               <button
                 type="button"
                 data-testid="level-sort-generate"
                 onClick={handleGenerateLevelSort}
                 disabled={levelPreviewStale}
-              >
-                生成关卡排序
-              </button>
+              >{t("生成关卡排序")}</button>
               <button
                 type="button"
                 onClick={handleDownloadSortedPointGrid}
                 disabled={!levelPreviewGrids.pointGrid || levelPreviewStale}
-              >
-                下载排序 point
-              </button>
+              >{t("下载排序 point")}</button>
             </div>
             {levelSortMode === 'regionRecolor' && levelRegionRecolorResult && (
               <div className="level-sort-metrics">
                 <span className={levelRegionRecolorResult.passed ? 'metric-pass' : 'metric-fail'}>
-                  {levelRegionRecolorResult.passed ? '✓ 全部达标' : '△ 未达标（已返回最优一次）'}
+                  {levelRegionRecolorResult.passed ? t("✓ 全部达标") : t("△ 未达标（已返回最优一次）")}
                 </span>
                 <span>seed: {levelRegionRecolorResult.usedSeed}</span>
-                <span>尝试: {levelRegionRecolorResult.attempts}</span>
-                <span>策略: {levelRegionRecolorResult.metrics.allocStrategy === 'matched' ? '最小溢出匹配' : '配额倾倒'}</span>
+                <span>{t("尝试:")}{' '}{levelRegionRecolorResult.attempts}</span>
+                <span>{t("策略:")}{' '}{levelRegionRecolorResult.metrics.allocStrategy === 'matched' ? t("最小溢出匹配") : t("配额倾倒")}</span>
                 <span>fixedFloor: {(levelRegionRecolorResult.metrics.fixedFloor * 100).toFixed(0)}%</span>
-                <span className={levelRegionRecolorResult.metrics.contourPreservation >= 0.75 ? 'metric-pass' : 'metric-fail'}>
-                  R1 轮廓保留 {levelRegionRecolorResult.metrics.contourPreservation.toFixed(2)}
+                <span className={levelRegionRecolorResult.metrics.contourPreservation >= 0.75 ? 'metric-pass' : 'metric-fail'}>{t("R1 轮廓保留")}{' '}{levelRegionRecolorResult.metrics.contourPreservation.toFixed(2)}
                 </span>
-                <span className={levelRegionRecolorResult.metrics.regionPurity >= 0.80 ? 'metric-pass' : 'metric-fail'}>
-                  区域纯度 {levelRegionRecolorResult.metrics.regionPurity.toFixed(2)}
+                <span className={levelRegionRecolorResult.metrics.regionPurity >= 0.80 ? 'metric-pass' : 'metric-fail'}>{t("区域纯度")}{' '}{levelRegionRecolorResult.metrics.regionPurity.toFixed(2)}
                 </span>
-                <span>区域数 {levelRegionRecolorResult.metrics.regionCount}</span>
-                <span className={levelRegionRecolorResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>
-                  R2 小块占比 {(levelRegionRecolorResult.metrics.smallBlockRatio * 100).toFixed(0)}%
+                <span>{t("区域数")}{' '}{levelRegionRecolorResult.metrics.regionCount}</span>
+                <span className={levelRegionRecolorResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>{t("R2 小块占比")}{' '}{(levelRegionRecolorResult.metrics.smallBlockRatio * 100).toFixed(0)}%
                 </span>
-                <span className={levelRegionRecolorResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>
-                  R3 尾串 {levelRegionRecolorResult.metrics.greedyTailRun}
+                <span className={levelRegionRecolorResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>{t("R3 尾串")}{' '}{levelRegionRecolorResult.metrics.greedyTailRun}
                 </span>
-                <span className={levelRegionRecolorResult.metrics.fixedCellRatio <= rrAdaptiveFixedThreshold(levelRegionRecolorResult.metrics.fixedFloor) ? 'metric-pass' : 'metric-fail'}>
-                  R4 落原位 {(levelRegionRecolorResult.metrics.fixedCellRatio * 100).toFixed(0)}%
+                <span className={levelRegionRecolorResult.metrics.fixedCellRatio <= rrAdaptiveFixedThreshold(levelRegionRecolorResult.metrics.fixedFloor) ? 'metric-pass' : 'metric-fail'}>{t("R4 落原位")}{' '}{(levelRegionRecolorResult.metrics.fixedCellRatio * 100).toFixed(0)}%
                 </span>
-                <span>拾取 {levelRegionRecolorResult.metrics.pickupCount}</span>
+                <span>{t("拾取")}{' '}{levelRegionRecolorResult.metrics.pickupCount}</span>
               </div>
             )}
             {levelSortMode === 'structure' && levelSortResult && (
               <div className="level-sort-metrics">
                 <span className={levelSortResult.passed ? 'metric-pass' : 'metric-fail'}>
-                  {levelSortResult.passed ? '✓ 全部达标' : '△ 未达标（已返回最优一次）'}
+                  {levelSortResult.passed ? t("✓ 全部达标") : t("△ 未达标（已返回最优一次）")}
                 </span>
                 <span>seed: {levelSortResult.usedSeed}</span>
-                <span>尝试: {levelSortResult.attempts}</span>
-                <span className={levelSortResult.metrics.structureRetention >= 0.55 ? 'metric-pass' : 'metric-fail'}>
-                  H1 结构保留 {levelSortResult.metrics.structureRetention.toFixed(2)}
+                <span>{t("尝试:")}{' '}{levelSortResult.attempts}</span>
+                <span className={levelSortResult.metrics.structureRetention >= 0.55 ? 'metric-pass' : 'metric-fail'}>{t("H1 结构保留")}{' '}{levelSortResult.metrics.structureRetention.toFixed(2)}
                 </span>
-                <span className={levelSortResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>
-                  H2 小块占比 {(levelSortResult.metrics.smallBlockRatio * 100).toFixed(0)}%
+                <span className={levelSortResult.metrics.smallBlockRatio <= 0.10 ? 'metric-pass' : 'metric-fail'}>{t("H2 小块占比")}{' '}{(levelSortResult.metrics.smallBlockRatio * 100).toFixed(0)}%
                 </span>
-                <span className={levelSortResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>
-                  H3 尾串 {levelSortResult.metrics.greedyTailRun}
+                <span className={levelSortResult.metrics.greedyTailRun <= 8 ? 'metric-pass' : 'metric-fail'}>{t("H3 尾串")}{' '}{levelSortResult.metrics.greedyTailRun}
                 </span>
-                <span className={levelSortResult.metrics.fixedCellRatio <= 0.50 ? 'metric-pass' : 'metric-fail'}>
-                  H4 白送进度 {(levelSortResult.metrics.fixedCellRatio * 100).toFixed(0)}%
+                <span className={levelSortResult.metrics.fixedCellRatio <= 0.50 ? 'metric-pass' : 'metric-fail'}>{t("H4 白送进度")}{' '}{(levelSortResult.metrics.fixedCellRatio * 100).toFixed(0)}%
                 </span>
-                <span>拾取 {levelSortResult.metrics.pickupCount}</span>
+                <span>{t("拾取")}{' '}{levelSortResult.metrics.pickupCount}</span>
               </div>
             )}
             <div className="panel-tip">
               {levelPreviewStale
-                ? '像素图已变化，请先点击“更新关卡预览”，再重新生成排序。'
+                ? t("像素图已变化，请先点击“更新关卡预览”，再重新生成排序。")
                 : levelPreviewGrids.pointGrid
-                  ? '已生成排序，保存草稿或加入内部配置时会把该排序写入 initPixel。'
-                  : '请先生成关卡排序，生成结果会作为 initPixel。'}
+                  ? t("已生成排序，保存草稿或加入内部配置时会把该排序写入 initPixel。")
+                  : t("请先生成关卡排序，生成结果会作为 initPixel。")}
             </div>
             {levelPreviewGrids.pointGrid && !levelPreviewStale ? (
               <div className="level-sort-preview">
-                <h4>initPixel / point 预览</h4>
+                <h4>{t("initPixel / point 预览")}</h4>
                 <div className="level-production-preview-pair">
                   <div className="level-production-preview-panel">
-                    <h5>排序前实际资源预览</h5>
+                    <h5>{t("排序前实际资源预览")}</h5>
                     <div
                       data-testid="level-production-map-resource-preview"
                       className="level-production-map-preview"
@@ -1624,12 +1590,10 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                       onClick={() => {
                         void handleDownloadLevelResourcePreview(levelPreviewGrids.mapGrid, 'map')
                       }}
-                    >
-                      下载图片
-                    </button>
+                    >{t("下载图片")}</button>
                   </div>
                   <div className="level-production-preview-panel">
-                    <h5>排序后实际资源预览</h5>
+                    <h5>{t("排序后实际资源预览")}</h5>
                     <div
                       data-testid="level-production-point-resource-preview"
                       className="level-production-map-preview"
@@ -1690,9 +1654,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
                       onClick={() => {
                         void handleDownloadLevelResourcePreview(levelPreviewGrids.pointGrid, 'point')
                       }}
-                    >
-                      下载图片
-                    </button>
+                    >{t("下载图片")}</button>
                   </div>
                 </div>
               </div>
@@ -1705,7 +1667,7 @@ export const ImageProcessor: React.FC<ImageProcessorProps> = ({
           onMapGridChange={handleLevelPreviewMapGridChange}
           requiresGeneratedPointGrid
           sortMode={levelSortMode}
-          emptyMessage="点击“更新关卡预览”后，会在这里显示最终豆子效果和草稿保存入口。"
+          emptyMessage={t("点击“更新关卡预览”后，会在这里显示最终豆子效果和草稿保存入口。")}
         />
       </div>
 

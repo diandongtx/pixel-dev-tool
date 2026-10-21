@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import type { GridData, RGBColor } from '../types/grid'
 import type { PixelConfigItem } from '../types/pixelConfig'
 import {
@@ -243,100 +244,100 @@ export const buildLevelQualityReport = (
   if (mapGrid.width <= 0 || mapGrid.height <= 0 || occupiedCellCount === 0) {
     checks.push({
       id: 'map-validity',
-      title: 'map 数据',
+      title: t("map 数据"),
       severity: 'error',
-      message: 'map 为空或尺寸异常，需要先确认导入/裁剪结果。'
+      message: t("map 为空或尺寸异常，需要先确认导入/裁剪结果。")
     })
   } else {
     checks.push({
       id: 'map-validity',
-      title: 'map 数据',
+      title: t("map 数据"),
       severity: 'pass',
-      message: `尺寸 ${mapGrid.width}x${mapGrid.height}，有效像素 ${occupiedCellCount} 个。`
+      message: t("尺寸 {0}x{1}，有效像素 {2} 个。", mapGrid.width, mapGrid.height, occupiedCellCount)
     })
   }
 
   if (!hasSameDimensions(mapGrid, effectivePointGrid)) {
     checks.push({
       id: 'dimension-consistency',
-      title: 'map / point 尺寸',
+      title: t("map / point 尺寸"),
       severity: 'error',
-      message: `map 为 ${mapGrid.width}x${mapGrid.height}，point 为 ${effectivePointGrid.width}x${effectivePointGrid.height}，生成关卡前需要保持一致。`
+      message: t("map 为 {0}x{1}，point 为 {2}x{3}，生成关卡前需要保持一致。", mapGrid.width, mapGrid.height, effectivePointGrid.width, effectivePointGrid.height)
     })
   } else {
     checks.push({
       id: 'dimension-consistency',
-      title: 'map / point 尺寸',
+      title: t("map / point 尺寸"),
       severity: 'pass',
-      message: 'map 与 point 尺寸一致。'
+      message: t("map 与 point 尺寸一致。")
     })
   }
 
   if (usedColorIndices.length > MAX_ALLOWED_COLOR_COUNT) {
     checks.push({
       id: 'color-count',
-      title: '颜色数量',
+      title: t("颜色数量"),
       severity: 'error',
-      message: `当前使用 ${usedColorIndices.length} 种颜色，超过建议上限 ${MAX_ALLOWED_COLOR_COUNT}，玩家区分和资源匹配都会变难。`
+      message: t("当前使用 {0} 种颜色，超过建议上限 {1}，玩家区分和资源匹配都会变难。", usedColorIndices.length, MAX_ALLOWED_COLOR_COUNT)
     })
   } else if (usedColorIndices.length > MAX_RECOMMENDED_COLOR_COUNT) {
     checks.push({
       id: 'color-count',
-      title: '颜色数量',
+      title: t("颜色数量"),
       severity: 'warning',
-      message: `当前使用 ${usedColorIndices.length} 种颜色，建议检查是否可以合并相近色。`
+      message: t("当前使用 {0} 种颜色，建议检查是否可以合并相近色。", usedColorIndices.length)
     })
   } else if (usedColorIndices.length <= 1) {
     checks.push({
       id: 'color-count',
-      title: '颜色数量',
+      title: t("颜色数量"),
       severity: 'warning',
-      message: '当前有效颜色过少，关卡可能缺少辨识度。'
+      message: t("当前有效颜色过少，关卡可能缺少辨识度。")
     })
   } else {
     checks.push({
       id: 'color-count',
-      title: '颜色数量',
+      title: t("颜色数量"),
       severity: 'pass',
-      message: `当前使用 ${usedColorIndices.length} 种颜色，处于可控范围。`
+      message: t("当前使用 {0} 种颜色，处于可控范围。", usedColorIndices.length)
     })
   }
 
   if (similarColorPairs.length > 0) {
     checks.push({
       id: 'similar-colors',
-      title: '相近颜色',
+      title: t("相近颜色"),
       severity: 'warning',
-      message: `发现 ${similarColorPairs.length} 组相近颜色，建议合并或换豆子资源。`,
+      message: t("发现 {0} 组相近颜色，建议合并或换豆子资源。", similarColorPairs.length),
       details: similarColorPairs.slice(0, 5).map((pair) =>
-        `#${pair.leftIndex} ${colorToHex(mapGrid.colors[pair.leftIndex])} 与 #${pair.rightIndex} ${colorToHex(mapGrid.colors[pair.rightIndex])}，距离 ${pair.distance.toFixed(1)}`
+        t("#{0} {1} 与 #{2} {3}，距离 {4}", pair.leftIndex, colorToHex(mapGrid.colors[pair.leftIndex]), pair.rightIndex, colorToHex(mapGrid.colors[pair.rightIndex]), pair.distance.toFixed(1))
       )
     })
   } else {
     checks.push({
       id: 'similar-colors',
-      title: '相近颜色',
+      title: t("相近颜色"),
       severity: 'pass',
-      message: '没有发现明显相近的已使用颜色。'
+      message: t("没有发现明显相近的已使用颜色。")
     })
   }
 
   if (smallRegions.length > 0) {
     checks.push({
       id: 'small-regions',
-      title: '孤立像素 / 小色块',
+      title: t("孤立像素 / 小色块"),
       severity: 'warning',
-      message: `发现 ${smallRegions.length} 个 1-${SMALL_REGION_MAX_SIZE} 格的小区域，其中孤立像素 ${isolatedPixelCount} 个。`,
+      message: t("发现 {0} 个 1-{1} 格的小区域，其中孤立像素 {2} 个。", smallRegions.length, SMALL_REGION_MAX_SIZE, isolatedPixelCount),
       details: smallRegions.slice(0, 5).map((region) =>
-        `#${region.colorIndex} ${colorToHex(mapGrid.colors[region.colorIndex])}，${region.size} 格，起点 (${region.x + 1}, ${region.y + 1})`
+        t("#{0} {1}，{2} 格，起点 ({3}, {4})", region.colorIndex, colorToHex(mapGrid.colors[region.colorIndex]), region.size, region.x + 1, region.y + 1)
       )
     })
   } else {
     checks.push({
       id: 'small-regions',
-      title: '孤立像素 / 小色块',
+      title: t("孤立像素 / 小色块"),
       severity: 'pass',
-      message: '没有发现明显孤立像素或过小色块。'
+      message: t("没有发现明显孤立像素或过小色块。")
     })
   }
 
@@ -358,23 +359,23 @@ export const buildLevelQualityReport = (
   if (dominantColorRatio > DOMINANT_COLOR_RATIO_ERROR) {
     checks.push({
       id: 'dominant-color-ratio',
-      title: '主导色占比',
+      title: t("主导色占比"),
       severity: 'error',
-      message: `主导色占比 ${(dominantColorRatio * 100).toFixed(0)}%，超过 ${DOMINANT_COLOR_RATIO_ERROR * 100}%。主导色占比过高的图不适配区域重染色，建议更换图源。`
+      message: t("主导色占比 {0}%，超过 {1}%。主导色占比过高的图不适配区域重染色，建议更换图源。", (dominantColorRatio * 100).toFixed(0), DOMINANT_COLOR_RATIO_ERROR * 100)
     })
   } else if (dominantColorRatio > DOMINANT_COLOR_RATIO_WARNING) {
     checks.push({
       id: 'dominant-color-ratio',
-      title: '主导色占比',
+      title: t("主导色占比"),
       severity: 'warning',
-      message: `主导色占比 ${(dominantColorRatio * 100).toFixed(0)}%，超过 ${DOMINANT_COLOR_RATIO_WARNING * 100}%。主导色占比过高的图不适配区域重染色，建议更换图源。`
+      message: t("主导色占比 {0}%，超过 {1}%。主导色占比过高的图不适配区域重染色，建议更换图源。", (dominantColorRatio * 100).toFixed(0), DOMINANT_COLOR_RATIO_WARNING * 100)
     })
   } else {
     checks.push({
       id: 'dominant-color-ratio',
-      title: '主导色占比',
+      title: t("主导色占比"),
       severity: 'pass',
-      message: `主导色占比 ${(dominantColorRatio * 100).toFixed(0)}%。`
+      message: t("主导色占比 {0}%。", (dominantColorRatio * 100).toFixed(0))
     })
   }
 
@@ -401,59 +402,59 @@ export const buildLevelQualityReport = (
       regionRecolorMetrics = computeRegionRecolorMetrics(pointGrid.colorIndices, mapGrid.colorIndices, slotSet, groups)
 
       if (regionRecolorMetrics.contourPreservation < CONTOUR_PRESERVATION_ERROR) {
-        checks.push({ id: 'contour-preservation', title: '轮廓保留', severity: 'error',
-          message: `轮廓保留 ${regionRecolorMetrics.contourPreservation.toFixed(2)}，低于 ${CONTOUR_PRESERVATION_ERROR}，目标图轮廓已难以辨认。` })
+        checks.push({ id: 'contour-preservation', title: t("轮廓保留"), severity: 'error',
+          message: t("轮廓保留 {0}，低于 {1}，目标图轮廓已难以辨认。", regionRecolorMetrics.contourPreservation.toFixed(2), CONTOUR_PRESERVATION_ERROR) })
       } else if (regionRecolorMetrics.contourPreservation < CONTOUR_PRESERVATION_WARNING) {
-        checks.push({ id: 'contour-preservation', title: '轮廓保留', severity: 'warning',
-          message: `轮廓保留 ${regionRecolorMetrics.contourPreservation.toFixed(2)}，建议 ≥ ${CONTOUR_PRESERVATION_WARNING}。` })
+        checks.push({ id: 'contour-preservation', title: t("轮廓保留"), severity: 'warning',
+          message: t("轮廓保留 {0}，建议 ≥ {1}。", regionRecolorMetrics.contourPreservation.toFixed(2), CONTOUR_PRESERVATION_WARNING) })
       } else {
-        checks.push({ id: 'contour-preservation', title: '轮廓保留', severity: 'pass',
-          message: `轮廓保留 ${regionRecolorMetrics.contourPreservation.toFixed(2)}。` })
+        checks.push({ id: 'contour-preservation', title: t("轮廓保留"), severity: 'pass',
+          message: t("轮廓保留 {0}。", regionRecolorMetrics.contourPreservation.toFixed(2)) })
       }
 
       if (regionRecolorMetrics.regionPurity < REGION_PURITY_ERROR) {
-        checks.push({ id: 'region-purity', title: '区域纯度', severity: 'error',
-          message: `区域纯度 ${regionRecolorMetrics.regionPurity.toFixed(2)}，低于 ${REGION_PURITY_ERROR}，区域内部混色严重。` })
+        checks.push({ id: 'region-purity', title: t("区域纯度"), severity: 'error',
+          message: t("区域纯度 {0}，低于 {1}，区域内部混色严重。", regionRecolorMetrics.regionPurity.toFixed(2), REGION_PURITY_ERROR) })
       } else if (regionRecolorMetrics.regionPurity < REGION_PURITY_WARNING) {
-        checks.push({ id: 'region-purity', title: '区域纯度', severity: 'warning',
-          message: `区域纯度 ${regionRecolorMetrics.regionPurity.toFixed(2)}，建议 ≥ ${REGION_PURITY_WARNING}。` })
+        checks.push({ id: 'region-purity', title: t("区域纯度"), severity: 'warning',
+          message: t("区域纯度 {0}，建议 ≥ {1}。", regionRecolorMetrics.regionPurity.toFixed(2), REGION_PURITY_WARNING) })
       } else {
-        checks.push({ id: 'region-purity', title: '区域纯度', severity: 'pass',
-          message: `区域纯度 ${regionRecolorMetrics.regionPurity.toFixed(2)}。` })
+        checks.push({ id: 'region-purity', title: t("区域纯度"), severity: 'pass',
+          message: t("区域纯度 {0}。", regionRecolorMetrics.regionPurity.toFixed(2)) })
       }
     }
 
     if (structureMetrics.structureRetention < STRUCTURE_RETENTION_ERROR) {
-      checks.push({ id: 'structure-retention', title: '结构保留度', severity: 'error',
-        message: `结构保留度 ${structureMetrics.structureRetention.toFixed(2)}，低于 ${STRUCTURE_RETENTION_ERROR}，开局难以辨认目标图。` })
+      checks.push({ id: 'structure-retention', title: t("结构保留度"), severity: 'error',
+        message: t("结构保留度 {0}，低于 {1}，开局难以辨认目标图。", structureMetrics.structureRetention.toFixed(2), STRUCTURE_RETENTION_ERROR) })
     } else if (structureMetrics.structureRetention < STRUCTURE_RETENTION_WARNING) {
-      checks.push({ id: 'structure-retention', title: '结构保留度', severity: 'warning',
-        message: `结构保留度 ${structureMetrics.structureRetention.toFixed(2)}，建议 ≥ ${STRUCTURE_RETENTION_WARNING}。` })
+      checks.push({ id: 'structure-retention', title: t("结构保留度"), severity: 'warning',
+        message: t("结构保留度 {0}，建议 ≥ {1}。", structureMetrics.structureRetention.toFixed(2), STRUCTURE_RETENTION_WARNING) })
     } else {
-      checks.push({ id: 'structure-retention', title: '结构保留度', severity: 'pass',
-        message: `结构保留度 ${structureMetrics.structureRetention.toFixed(2)}。` })
+      checks.push({ id: 'structure-retention', title: t("结构保留度"), severity: 'pass',
+        message: t("结构保留度 {0}。", structureMetrics.structureRetention.toFixed(2)) })
     }
 
     if (structureMetrics.smallBlockRatio > SMALL_BLOCK_RATIO_ERROR) {
-      checks.push({ id: 'small-block-ratio', title: '小块占比', severity: 'error',
-        message: `1-2 颗块占比 ${(structureMetrics.smallBlockRatio * 100).toFixed(0)}%，超过 ${SMALL_BLOCK_RATIO_ERROR * 100}%，拾取过碎。` })
+      checks.push({ id: 'small-block-ratio', title: t("小块占比"), severity: 'error',
+        message: t("1-2 颗块占比 {0}%，超过 {1}%，拾取过碎。", (structureMetrics.smallBlockRatio * 100).toFixed(0), SMALL_BLOCK_RATIO_ERROR * 100) })
     } else if (structureMetrics.smallBlockRatio > SMALL_BLOCK_RATIO_WARNING) {
-      checks.push({ id: 'small-block-ratio', title: '小块占比', severity: 'warning',
-        message: `1-2 颗块占比 ${(structureMetrics.smallBlockRatio * 100).toFixed(0)}%，建议 ≤ ${SMALL_BLOCK_RATIO_WARNING * 100}%。` })
+      checks.push({ id: 'small-block-ratio', title: t("小块占比"), severity: 'warning',
+        message: t("1-2 颗块占比 {0}%，建议 ≤ {1}%。", (structureMetrics.smallBlockRatio * 100).toFixed(0), SMALL_BLOCK_RATIO_WARNING * 100) })
     } else {
-      checks.push({ id: 'small-block-ratio', title: '小块占比', severity: 'pass',
-        message: `1-2 颗块占比 ${(structureMetrics.smallBlockRatio * 100).toFixed(0)}%。` })
+      checks.push({ id: 'small-block-ratio', title: t("小块占比"), severity: 'pass',
+        message: t("1-2 颗块占比 {0}%。", (structureMetrics.smallBlockRatio * 100).toFixed(0)) })
     }
 
     if (structureMetrics.greedyTailRun > GREEDY_TAIL_RUN_ERROR) {
-      checks.push({ id: 'greedy-tail-run', title: '收尾尾串', severity: 'error',
-        message: `贪心尾串 ${structureMetrics.greedyTailRun}，超过 ${GREEDY_TAIL_RUN_ERROR}，收尾过长。` })
+      checks.push({ id: 'greedy-tail-run', title: t("收尾尾串"), severity: 'error',
+        message: t("贪心尾串 {0}，超过 {1}，收尾过长。", structureMetrics.greedyTailRun, GREEDY_TAIL_RUN_ERROR) })
     } else if (structureMetrics.greedyTailRun > GREEDY_TAIL_RUN_WARNING) {
-      checks.push({ id: 'greedy-tail-run', title: '收尾尾串', severity: 'warning',
-        message: `贪心尾串 ${structureMetrics.greedyTailRun}，建议 ≤ ${GREEDY_TAIL_RUN_WARNING}。` })
+      checks.push({ id: 'greedy-tail-run', title: t("收尾尾串"), severity: 'warning',
+        message: t("贪心尾串 {0}，建议 ≤ {1}。", structureMetrics.greedyTailRun, GREEDY_TAIL_RUN_WARNING) })
     } else {
-      checks.push({ id: 'greedy-tail-run', title: '收尾尾串', severity: 'pass',
-        message: `贪心尾串 ${structureMetrics.greedyTailRun}。` })
+      checks.push({ id: 'greedy-tail-run', title: t("收尾尾串"), severity: 'pass',
+        message: t("贪心尾串 {0}。", structureMetrics.greedyTailRun) })
     }
 
     // H4 = 白送进度（落原位）。
@@ -464,24 +465,24 @@ export const buildLevelQualityReport = (
       const fixedWarning = rrAdaptiveFixedThreshold(fixedFloor)
       const fixedError = fixedWarning + 0.10
       if (structureMetrics.fixedCellRatio > fixedError) {
-        checks.push({ id: 'fixed-cell-ratio', title: '开局白送进度', severity: 'error',
-          message: `落原位占比 ${(structureMetrics.fixedCellRatio * 100).toFixed(0)}%，超过自适应上限 ${(fixedError * 100).toFixed(0)}%（fixedFloor ${(fixedFloor * 100).toFixed(0)}%），开局白送过多、关卡偏短。` })
+        checks.push({ id: 'fixed-cell-ratio', title: t("开局白送进度"), severity: 'error',
+          message: t("落原位占比 {0}%，超过自适应上限 {1}%（fixedFloor {2}%），开局白送过多、关卡偏短。", (structureMetrics.fixedCellRatio * 100).toFixed(0), (fixedError * 100).toFixed(0), (fixedFloor * 100).toFixed(0)) })
       } else if (structureMetrics.fixedCellRatio > fixedWarning) {
-        checks.push({ id: 'fixed-cell-ratio', title: '开局白送进度', severity: 'warning',
-          message: `落原位占比 ${(structureMetrics.fixedCellRatio * 100).toFixed(0)}%，建议 ≤ ${(fixedWarning * 100).toFixed(0)}%（fixedFloor ${(fixedFloor * 100).toFixed(0)}%）。` })
+        checks.push({ id: 'fixed-cell-ratio', title: t("开局白送进度"), severity: 'warning',
+          message: t("落原位占比 {0}%，建议 ≤ {1}%（fixedFloor {2}%）。", (structureMetrics.fixedCellRatio * 100).toFixed(0), (fixedWarning * 100).toFixed(0), (fixedFloor * 100).toFixed(0)) })
       } else {
-        checks.push({ id: 'fixed-cell-ratio', title: '开局白送进度', severity: 'pass',
-          message: `落原位占比 ${(structureMetrics.fixedCellRatio * 100).toFixed(0)}%（自适应上限 ${(fixedWarning * 100).toFixed(0)}%）。` })
+        checks.push({ id: 'fixed-cell-ratio', title: t("开局白送进度"), severity: 'pass',
+          message: t("落原位占比 {0}%（自适应上限 {1}%）。", (structureMetrics.fixedCellRatio * 100).toFixed(0), (fixedWarning * 100).toFixed(0)) })
       }
     } else if (structureMetrics.fixedCellRatio > FIXED_CELL_RATIO_ERROR) {
-      checks.push({ id: 'fixed-cell-ratio', title: '开局白送进度', severity: 'error',
-        message: `落原位占比 ${(structureMetrics.fixedCellRatio * 100).toFixed(0)}%，超过 ${(FIXED_CELL_RATIO_ERROR * 100).toFixed(0)}%，开局白送过多、关卡偏短。` })
+      checks.push({ id: 'fixed-cell-ratio', title: t("开局白送进度"), severity: 'error',
+        message: t("落原位占比 {0}%，超过 {1}%，开局白送过多、关卡偏短。", (structureMetrics.fixedCellRatio * 100).toFixed(0), (FIXED_CELL_RATIO_ERROR * 100).toFixed(0)) })
     } else if (structureMetrics.fixedCellRatio > SA_H4_FIXED_CELL_RATIO_WARNING) {
-      checks.push({ id: 'fixed-cell-ratio', title: '开局白送进度', severity: 'warning',
-        message: `落原位占比 ${(structureMetrics.fixedCellRatio * 100).toFixed(0)}%，建议 ≤ ${(SA_H4_FIXED_CELL_RATIO_WARNING * 100).toFixed(0)}%。` })
+      checks.push({ id: 'fixed-cell-ratio', title: t("开局白送进度"), severity: 'warning',
+        message: t("落原位占比 {0}%，建议 ≤ {1}%。", (structureMetrics.fixedCellRatio * 100).toFixed(0), (SA_H4_FIXED_CELL_RATIO_WARNING * 100).toFixed(0)) })
     } else {
-      checks.push({ id: 'fixed-cell-ratio', title: '开局白送进度', severity: 'pass',
-        message: `落原位占比 ${(structureMetrics.fixedCellRatio * 100).toFixed(0)}%。` })
+      checks.push({ id: 'fixed-cell-ratio', title: t("开局白送进度"), severity: 'pass',
+        message: t("落原位占比 {0}%。", (structureMetrics.fixedCellRatio * 100).toFixed(0)) })
     }
 
     const [bandLow, bandHigh] = pickupCountBand
@@ -493,14 +494,14 @@ export const buildLevelQualityReport = (
       : 0
     const exceedRatio = Math.max(overBy, underBy)
     if (exceedRatio > 0.5) {
-      checks.push({ id: 'pickup-count-band', title: '操作数带宽', severity: 'error',
-        message: `预估拾取 ${structureMetrics.pickupCount} 次，超出带宽 ${bandLow}-${bandHigh} 达 ${(exceedRatio * 100).toFixed(0)}%。` })
+      checks.push({ id: 'pickup-count-band', title: t("操作数带宽"), severity: 'error',
+        message: t("预估拾取 {0} 次，超出带宽 {1}-{2} 达 {3}%。", structureMetrics.pickupCount, bandLow, bandHigh, (exceedRatio * 100).toFixed(0)) })
     } else if (structureMetrics.pickupCount < bandLow || structureMetrics.pickupCount > bandHigh) {
-      checks.push({ id: 'pickup-count-band', title: '操作数带宽', severity: 'warning',
-        message: `预估拾取 ${structureMetrics.pickupCount} 次，超出带宽 ${bandLow}-${bandHigh}。` })
+      checks.push({ id: 'pickup-count-band', title: t("操作数带宽"), severity: 'warning',
+        message: t("预估拾取 {0} 次，超出带宽 {1}-{2}。", structureMetrics.pickupCount, bandLow, bandHigh) })
     } else {
-      checks.push({ id: 'pickup-count-band', title: '操作数带宽', severity: 'pass',
-        message: `预估拾取 ${structureMetrics.pickupCount} 次，落在带宽 ${bandLow}-${bandHigh}。` })
+      checks.push({ id: 'pickup-count-band', title: t("操作数带宽"), severity: 'pass',
+        message: t("预估拾取 {0} 次，落在带宽 {1}-{2}。", structureMetrics.pickupCount, bandLow, bandHigh) })
     }
   }
 
@@ -512,36 +513,36 @@ export const buildLevelQualityReport = (
   if (!pixelConfig) {
     checks.push({
       id: 'difficulty-estimate',
-      title: '难度估算',
+      title: t("难度估算"),
       severity: 'warning',
-      message: '缺少 pixelconfig 草稿，暂时无法估算关卡步数。'
+      message: t("缺少 pixelconfig 草稿，暂时无法估算关卡步数。")
     })
   } else if (!assessment) {
     checks.push({
       id: 'difficulty-estimate',
-      title: '难度估算',
+      title: t("难度估算"),
       severity: 'warning',
-      message: '当前矩阵无法生成难度估算，请检查 map / point 数据。'
+      message: t("当前矩阵无法生成难度估算，请检查 map / point 数据。")
     })
   } else if (!assessment.valid) {
     checks.push({
       id: 'difficulty-estimate',
-      title: '难度估算',
+      title: t("难度估算"),
       severity: 'error',
-      message: assessment.reason ?? '当前初始状态无法还原到目标 map，请检查 point 草稿。'
+      message: assessment.reason ?? t("当前初始状态无法还原到目标 map，请检查 point 草稿。")
     })
   } else {
     checks.push({
       id: 'difficulty-estimate',
-      title: '难度估算',
+      title: t("难度估算"),
       severity: 'pass',
-      message: `预计 ${assessment.estimatedSteps} 步，峰值占用 ${assessment.trayUsagePeak}/${assessment.temporarySlotCount}，难度分 ${assessment.difficultyScore}。`,
+      message: t("预计 {0} 步，峰值占用 {1}/{2}，难度分 {3}。", assessment.estimatedSteps, assessment.trayUsagePeak, assessment.temporarySlotCount, assessment.difficultyScore),
       details: suggestedConfig
         ? [
-            `建议 difficulty=${suggestedConfig.difficulty}`,
-            `建议 storageInitialSlots=${suggestedConfig.storageInitialSlots}`,
-            `建议 initialTimeLimit=${suggestedConfig.initialTimeLimit}`,
-            `建议 adTimeIncrement=${suggestedConfig.adTimeIncrement}`
+            t("建议 difficulty={0}", suggestedConfig.difficulty),
+            t("建议 storageInitialSlots={0}", suggestedConfig.storageInitialSlots),
+            t("建议 initialTimeLimit={0}", suggestedConfig.initialTimeLimit),
+            t("建议 adTimeIncrement={0}", suggestedConfig.adTimeIncrement)
           ]
         : undefined
     })

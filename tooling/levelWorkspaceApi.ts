@@ -1,3 +1,4 @@
+import { t } from '../src/i18n'
 import { Buffer } from 'node:buffer'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
@@ -56,7 +57,7 @@ const readJsonBody = async <T>(request: IncomingMessage): Promise<T> => {
 const decodeThumbnailDataUrl = (dataUrl: string): Uint8Array => {
   const match = dataUrl.match(/^data:image\/png;base64,(.+)$/)
   if (!match) {
-    throw new Error('thumbnail 必须是 PNG data URL')
+    throw new Error(t("thumbnail 必须是 PNG data URL"))
   }
 
   return Buffer.from(match[1], 'base64')

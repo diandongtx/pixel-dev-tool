@@ -1,3 +1,4 @@
+import { t } from '../src/i18n'
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import {
@@ -81,7 +82,7 @@ const assertInside = (parent: string, child: string): string => {
   if (relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative))) {
     return child
   }
-  throw new Error('阅览资源路径越界')
+  throw new Error(t("阅览资源路径越界"))
 }
 
 const assertSafePreviewPath = (relativePath: string): void => {
@@ -103,7 +104,7 @@ const assertSafePreviewPath = (relativePath: string): void => {
     || isAbsolute
     || hasNestedBeadPath
   ) {
-    throw new Error('阅览资源路径越界')
+    throw new Error(t("阅览资源路径越界"))
   }
 }
 
@@ -201,7 +202,7 @@ export const createMainLevelReviewRepository = ({
       if (restorationErrors.length > 0) {
         throw new AggregateError(
           [fallbackError, ...restorationErrors],
-          'Windows 阅览目录替换失败，且上一版目录恢复失败'
+          t("Windows 阅览目录替换失败，且上一版目录恢复失败")
         )
       }
 
@@ -217,15 +218,15 @@ export const createMainLevelReviewRepository = ({
     request: MainLevelReviewGenerateRequest
   ): Promise<MainLevelReviewGenerateResponse> => {
     if (!request || !Array.isArray(request.levels)) {
-      throw new Error('关卡配置 levels 必须是数组')
+      throw new Error(t("关卡配置 levels 必须是数组"))
     }
     if (!Array.isArray(request.pixelConfigs)) {
-      throw new Error('像素图配置 pixelConfigs 必须是数组')
+      throw new Error(t("像素图配置 pixelConfigs 必须是数组"))
     }
 
     const sourceStat = await stat(sourceBeads).catch(() => null)
     if (!sourceStat?.isDirectory()) {
-      throw new Error('豆子资源目录不可用：resource/grid')
+      throw new Error(t("豆子资源目录不可用：resource/grid"))
     }
 
     const sourceEntries = await readdir(sourceBeads, { withFileTypes: true })
@@ -274,7 +275,7 @@ export const createMainLevelReviewRepository = ({
             } catch (rollbackError: unknown) {
               throw new AggregateError(
                 [rootRenameError, rollbackError],
-                '阅览目录替换失败，且上一版目录恢复失败'
+                t("阅览目录替换失败，且上一版目录恢复失败")
               )
             }
           }

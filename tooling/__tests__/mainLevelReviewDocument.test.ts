@@ -87,7 +87,7 @@ describe('buildMainLevelReviewRecords', () => {
       localPixelResource: [],
       colorCount: null,
       beadCount: null,
-      diagnostics: ['未找到 pixelImageId 999 对应的像素图配置']
+      diagnostics: ['No image configuration for pixelImageId 999']
     })
     expect(result.records[1]).toMatchObject({
       pixel: {
@@ -105,7 +105,7 @@ describe('buildMainLevelReviewRecords', () => {
       diagnostics: []
     })
     expect(result.warnings).toEqual([
-      '关卡 10：未找到 pixelImageId 999 对应的像素图配置'
+      'Level 10: No image configuration for pixelImageId 999'
     ])
 
     expect(result.records[1].level).not.toBe(matchedLevel)
@@ -139,14 +139,14 @@ describe('buildMainLevelReviewRecords', () => {
     const result = buildMainLevelReviewRecords(request, ['red_3.png'])
 
     expect(result.records[0].diagnostics).toEqual([
-      '颜色索引 0 缺少 red_2.png',
-      '颜色索引 1 缺少资源名称映射',
-      '颜色索引 2 缺少资源名称映射'
+      'Color index 0 is missing red_2.png',
+      'Color index 1 has no resource name mapping',
+      'Color index 2 has no resource name mapping'
     ])
     expect(result.warnings).toEqual([
-      '关卡 7：颜色索引 0 缺少 red_2.png',
-      '关卡 7：颜色索引 1 缺少资源名称映射',
-      '关卡 7：颜色索引 2 缺少资源名称映射'
+      'Level 7: Color index 0 is missing red_2.png',
+      'Level 7: Color index 1 has no resource name mapping',
+      'Level 7: Color index 2 has no resource name mapping'
     ])
   })
 
@@ -162,8 +162,8 @@ describe('buildMainLevelReviewRecords', () => {
     const result = buildMainLevelReviewRecords(request, [])
 
     expect(result.warnings).toEqual([
-      '关卡 10：未找到 pixelImageId 999 对应的像素图配置',
-      '关卡 20：未找到 pixelImageId 998 对应的像素图配置'
+      'Level 10: No image configuration for pixelImageId 999',
+      'Level 20: No image configuration for pixelImageId 998'
     ])
   })
 
@@ -171,12 +171,12 @@ describe('buildMainLevelReviewRecords', () => {
     expect(() => buildMainLevelReviewRecords(
       { levels: null, pixelConfigs: [] } as unknown as MainLevelReviewGenerateRequest,
       []
-    )).toThrow('关卡配置 levels 必须是数组')
+    )).toThrow('Level configuration levels must be an array')
 
     expect(() => buildMainLevelReviewRecords(
       { levels: [], pixelConfigs: {} } as unknown as MainLevelReviewGenerateRequest,
       []
-    )).toThrow('像素图配置 pixelConfigs 必须是数组')
+    )).toThrow('Image configuration pixelConfigs must be an array')
   })
 
   it.each([
@@ -199,9 +199,9 @@ describe('buildMainLevelReviewRecords', () => {
       localPixelResource: ['red', 'green'],
       colorCount: null,
       beadCount: null,
-      diagnostics: ['预览矩阵 initPixel 不可用']
+      diagnostics: ['Preview matrix initPixel is unavailable']
     })
-    expect(result.warnings).toEqual(['关卡 8：预览矩阵 initPixel 不可用'])
+    expect(result.warnings).toEqual(['Level 8: Preview matrix initPixel is unavailable'])
   })
 })
 
@@ -274,21 +274,21 @@ describe('renderMainLevelReviewHtml', () => {
   it('includes review-only layout labels and all secondary fields without duplicate ID controls', () => {
     const html = renderMainLevelReviewHtml([makeRecord()], '2026-07-16T12:00:00Z')
 
-    expect(html).toContain('主线关卡阅览')
-    expect(html).toContain('颜色数量')
-    expect(html).toContain('豆子数量')
+    expect(html).toContain('Main level review')
+    expect(html).toContain('Color count')
+    expect(html).toContain('Bead count')
     for (const label of [
-      '缩略图', '类型', '难度', 'pixelImageId', '宽高', '最大槽位', '槽位列数',
-      '初始槽位', '广告解锁增量', '初始时限', '广告时间增量', '复活次数', '道具配置',
-      '像素图名称', '主题', '品质', '图片类型', '相册 ID', '像素图难度'
+      'Thumbnail', 'Type', 'Difficulty', 'pixelImageId', 'Dimensions', 'Maximum slots', 'Storage columns',
+      'Initial slots', 'Slots unlocked per ad', 'Initial time limit', 'Extra time per ad', 'Revives', 'Item configuration',
+      'Image name', 'Theme', 'Quality', 'Image type', 'Album ID', 'Image difficulty'
     ]) {
       expect(html).toContain(label)
     }
     expect(html).toContain('class="level-id"')
     expect(html).not.toContain('data-field="id"')
-    expect(html).not.toContain('关卡 ID')
-    expect(html).not.toContain('保存当前关卡')
-    expect(html).not.toContain('删除关卡')
+    expect(html).not.toContain('Level ID')
+    expect(html).not.toContain('Save this level')
+    expect(html).not.toContain('Delete level')
     expect(html).not.toMatch(/<textarea\b/i)
   })
 
@@ -302,7 +302,7 @@ describe('renderMainLevelReviewHtml', () => {
     expect(html).toContain('2026-07-16T12:34:56.000Z')
     expect(html).toContain('rare\\u003c\\u0026\\u003ethumb')
     expect(html).toContain('resource\\u003c\\u0026\\u003ewarning')
-    expect(html).toMatch(/<html\s+lang="zh-CN">/)
+    expect(html).toMatch(/<html\s+lang="en">/)
     expect(html).toContain('<meta charset="UTF-8">')
     expect(html).toMatch(/<\/html>\n$/)
     const inlineScript = html.match(/<script>([\s\S]*)<\/script>/)?.[1]

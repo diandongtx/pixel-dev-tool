@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { GridMatrixPreview } from './GridMatrixPreview'
 import type { ManagedLevelConfigItem as LevelConfigItem, LevelConfigItem as NumberedLevelConfigItem } from '../types/levelConfig'
@@ -48,11 +49,11 @@ const DEFAULT_LEVEL_VALUES = {
 } as const
 
 const DIFFICULTY_OPTIONS = [
-  { value: 1, label: '1 容易' },
-  { value: 2, label: '2 普通' },
-  { value: 3, label: '3 困难' },
-  { value: 4, label: '4 专家' },
-  { value: 5, label: '5 大师' }
+  { value: 1, label: t("1 容易") },
+  { value: 2, label: t("2 普通") },
+  { value: 3, label: t("3 困难") },
+  { value: 4, label: t("4 专家") },
+  { value: 5, label: t("5 大师") }
 ] as const
 
 const formatOptionalText = (value: unknown): string =>
@@ -60,7 +61,7 @@ const formatOptionalText = (value: unknown): string =>
 
 const formatPixelDifficulty = (value: unknown): string => {
   const difficulty = typeof value === 'number' && Number.isInteger(value) ? value : 1
-  return DIFFICULTY_OPTIONS.find((option) => option.value === difficulty)?.label ?? '1 容易'
+  return DIFFICULTY_OPTIONS.find((option) => option.value === difficulty)?.label ?? t("1 容易")
 }
 
 const PixelMetadataSummary = ({
@@ -74,15 +75,15 @@ const PixelMetadataSummary = ({
     <div className="level-config-pixel-meta-title">{title}</div>
     {pixelConfig ? (
       <div className="level-config-pixel-meta-grid">
-        <div>主题：{formatOptionalText(pixelConfig.theme)}</div>
-        <div>品质：{formatOptionalText(pixelConfig.quality ?? 1)}</div>
-        <div>图片类型：{formatOptionalText(pixelConfig.imageType ?? 1)}</div>
-        <div>专辑：{formatOptionalText(pixelConfig.albumId)}</div>
-        <div>难度：{formatPixelDifficulty(pixelConfig.difficulty)}</div>
-        <div>豆子数量：{pixelConfig.beadCount}</div>
+        <div>{t("主题：")}{formatOptionalText(pixelConfig.theme)}</div>
+        <div>{t("品质：")}{formatOptionalText(pixelConfig.quality ?? 1)}</div>
+        <div>{t("图片类型：")}{formatOptionalText(pixelConfig.imageType ?? 1)}</div>
+        <div>{t("专辑：")}{formatOptionalText(pixelConfig.albumId)}</div>
+        <div>{t("难度：")}{formatPixelDifficulty(pixelConfig.difficulty)}</div>
+        <div>{t("豆子数量：")}{pixelConfig.beadCount}</div>
       </div>
     ) : (
-      <div className="level-config-pixel-meta-empty">未选择像素图</div>
+      <div className="level-config-pixel-meta-empty">{t("未选择像素图")}</div>
     )}
   </div>
 )
@@ -100,14 +101,14 @@ const LevelMatrixThumbnail = ({ pixelConfig }: { pixelConfig: PixelConfigItem })
     drawPixelMatrixThumbnail(canvasRef.current, pixelConfig.pixelMatrix, pixelConfig.localPixelResource, 1)
   }, [pixelConfig.pixelMatrix, pixelConfig.localPixelResource])
 
-  return <canvas ref={canvasRef} role="img" aria-label={`${pixelConfig.name} 缩略图`} />
+  return <canvas ref={canvasRef} role="img" aria-label={t("{0} 缩略图", pixelConfig.name)} />
 }
 
 const sortPixelConfigs = (items: PixelConfigItem[]): PixelConfigItem[] =>
   [...items].sort((left, right) => left.id - right.id || left.name.localeCompare(right.name))
 
 const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : '未知错误'
+  error instanceof Error ? error.message : t("未知错误")
 
 const buildInternalLevelConfigPath = (type: number): string =>
   `data/level-workspace/config/${buildLevelConfigFilename(type)}`
@@ -139,7 +140,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
 }) => {
   const isDaily = levelType === 2
   const [levels, setLevels] = useState<LevelConfigItem[]>([])
-  const [statusMessage, setStatusMessage] = useState(`请先导入 ${buildPixelConfigFilename()} 与 ${buildLevelConfigFilename(levelType)}。`)
+  const [statusMessage, setStatusMessage] = useState(t("请先导入 {0} 与 {1}。", buildPixelConfigFilename(), buildLevelConfigFilename(levelType)))
   const [selectedPixelId, setSelectedPixelId] = useState<number>(0)
   const [propConfigDrafts, setPropConfigDrafts] = useState<Record<string, string>>({})
   const [levelIdDrafts, setLevelIdDrafts] = useState<Record<string, string>>({})
@@ -180,11 +181,11 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
     try {
       const items = sortPixelConfigs(await readLevelWorkspacePixelConfig())
       onPixelConfigsChange(items)
-      onLoadedPixelConfigNameChange('内部 pixelconfig')
-      setStatusMessage(`已加载内部 pixelconfig，共 ${items.length} 条像素图记录。`)
+      onLoadedPixelConfigNameChange(t("内部 pixelconfig"))
+      setStatusMessage(t("已加载内部 pixelconfig，共 {0} 条像素图记录。", items.length))
       return items
     } catch (error: unknown) {
-      setStatusMessage(`加载内部 pixelconfig 失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("加载内部 pixelconfig 失败：{0}", getErrorMessage(error)))
       return null
     }
   }
@@ -204,10 +205,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
         const items = sortPixelConfigs(await readLevelWorkspacePixelConfig())
         if (!isActive) return
         onPixelConfigsChange(items)
-        onLoadedPixelConfigNameChange('内部 pixelconfig')
+        onLoadedPixelConfigNameChange(t("内部 pixelconfig"))
       } catch (error: unknown) {
         if (!isActive) return
-        setStatusMessage(`加载内部 pixelconfig 失败：${getErrorMessage(error)}`)
+        setStatusMessage(t("加载内部 pixelconfig 失败：{0}", getErrorMessage(error)))
       }
     }
 
@@ -232,7 +233,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
         }))
       } catch (error: unknown) {
         if (!isActive) return
-        setStatusMessage(`加载内部缩略图失败：${getErrorMessage(error)}`)
+        setStatusMessage(t("加载内部缩略图失败：{0}", getErrorMessage(error)))
       }
     }
 
@@ -298,10 +299,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       const rawDraft = (draftSource[level.id] ?? String(level.id)).trim()
       if (isDaily) {
         if (!isDailyLevelDate(rawDraft)) {
-          return { ok: false, message: `关卡 ${level.id} 的 ID 必须是有效日期（YYYY-MM-DD）。` }
+          return { ok: false, message: t("关卡 {0} 的 ID 必须是有效日期（YYYY-MM-DD）。", level.id) }
         }
         if (rawDraft !== level.id && nextLevels.some((item) => item.id === rawDraft)) {
-          return { ok: false, message: `日期 ${rawDraft} 已有每日挑战，请选择其他日期。` }
+          return { ok: false, message: t("日期 {0} 已有每日挑战，请选择其他日期。", rawDraft) }
         }
         nextLevels = nextLevels.map((item) => item.id === level.id ? { ...item, id: rawDraft } : item)
         if (level.id === targetLevelId) focusedId = rawDraft
@@ -310,7 +311,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       if (!/^\d+$/.test(rawDraft)) {
         return {
           ok: false,
-          message: `关卡 ${level.id} 的 ID 必须是正整数。`
+          message: t("关卡 {0} 的 ID 必须是正整数。", level.id)
         }
       }
 
@@ -318,7 +319,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       if (!Number.isInteger(nextId) || nextId <= 0) {
         return {
           ok: false,
-          message: `关卡 ${level.id} 的 ID 必须大于 0。`
+          message: t("关卡 {0} 的 ID 必须大于 0。", level.id)
         }
       }
 
@@ -327,7 +328,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
 
       const hasConflict = nextLevels.some((item) => item.id === nextId && item.id !== level.id)
       const moveMode = hasConflict
-        ? window.confirm(`当前类型内已存在关卡 ID ${nextId}。确认=交换两个关卡 ID，取消=插入并顺移后续关卡。`)
+        ? window.confirm(t("当前类型内已存在关卡 ID {0}。确认=交换两个关卡 ID，取消=插入并顺移后续关卡。", nextId))
           ? 'swap'
           : 'insert'
         : 'insert'
@@ -354,9 +355,9 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       syncLevelIdDrafts(filtered)
       syncPropConfigDrafts(filtered)
       setOpenLevelIds({})
-      setStatusMessage(`已加载内部 ${buildLevelConfigFilename(levelType)}，共 ${filtered.length} 个关卡。`)
+      setStatusMessage(t("已加载内部 {0}，共 {1} 个关卡。", buildLevelConfigFilename(levelType), filtered.length))
     } catch (error: unknown) {
-      setStatusMessage(`加载内部 levelconfig 失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("加载内部 levelconfig 失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -373,10 +374,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       setLevels(normalizedLevels)
       syncLevelIdDrafts(normalizedLevels)
       setStatusMessage(
-        `已保存内部 levelconfig：${buildInternalLevelConfigPath(levelType)}，共 ${normalizedLevels.length} 个关卡。`
+        t("已保存内部 levelconfig：{0}，共 {1} 个关卡。", buildInternalLevelConfigPath(levelType), normalizedLevels.length)
       )
     } catch (error: unknown) {
-      setStatusMessage(`保存内部 levelconfig 失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("保存内部 levelconfig 失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -398,13 +399,13 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
         pixelConfigs
       })
       setStatusMessage(
-        `已更新网页阅览：${result.outputPath}，共 ${result.levelCount} 个关卡` +
-        (result.warnings.length > 0 ? `，${result.warnings.length} 条资源提示。` : '。')
+        t("已更新网页阅览：{0}，共 {1} 个关卡", result.outputPath, result.levelCount) +
+        (result.warnings.length > 0 ? t("，{0} 条资源提示。", result.warnings.length) : '。')
       )
       previewTab?.location.replace(result.previewUrl)
     } catch (error: unknown) {
       previewTab?.close()
-      setStatusMessage(`生成网页阅览失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("生成网页阅览失败：{0}", getErrorMessage(error)))
     } finally {
       setIsGeneratingReview(false)
     }
@@ -418,10 +419,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       const items = parsePixelConfigFile(await file.text())
       onPixelConfigsChange(items.sort((left, right) => left.id - right.id))
       onLoadedPixelConfigNameChange(file.name)
-      setStatusMessage(`已加载 ${file.name}，像素图数量 ${items.length}。`)
+      setStatusMessage(t("已加载 {0}，像素图数量 {1}。", file.name, items.length))
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : '未知错误'
-      setStatusMessage(`导入 pixelconfig 失败：${message}`)
+      const message = error instanceof Error ? error.message : t("未知错误")
+      setStatusMessage(t("导入 pixelconfig 失败：{0}", message))
     } finally {
       event.target.value = ''
     }
@@ -446,7 +447,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
     }
 
     setThumbnailUrls(nextUrls)
-    setStatusMessage(`已导入 ${files.length} 个缩略图文件。`)
+    setStatusMessage(t("已导入 {0} 个缩略图文件。", files.length))
     event.target.value = ''
   }
 
@@ -463,10 +464,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       syncLevelIdDrafts(sortedLevels)
       syncPropConfigDrafts(sortedLevels)
       setOpenLevelIds({})
-      setStatusMessage(`已加载 ${file.name}，当前类型关卡数量 ${filtered.length}。`)
+      setStatusMessage(t("已加载 {0}，当前类型关卡数量 {1}。", file.name, filtered.length))
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : '未知错误'
-      setStatusMessage(`导入 levelconfig 失败：${message}`)
+      const message = error instanceof Error ? error.message : t("未知错误")
+      setStatusMessage(t("导入 levelconfig 失败：{0}", message))
     } finally {
       event.target.value = ''
     }
@@ -499,7 +500,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       const matchedPixelConfig = pixelConfigs.find((item) => item.name === assetBaseName) ?? null
 
       if (!matchedPixelConfig) {
-        setStatusMessage(`未找到名称为 ${assetBaseName} 的像素图记录，请先到像素图管理页通过 map/point 配对创建 pixelconfig。`)
+        setStatusMessage(t("未找到名称为 {0} 的像素图记录，请先到像素图管理页通过 map/point 配对创建 pixelconfig。", assetBaseName))
         return
       }
 
@@ -517,10 +518,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
         [addedLevel.id]: JSON.stringify(addedLevel.propConfigs, null, 2)
       }))
       setSelectedPixelId(matchedPixelConfig.id)
-      setStatusMessage(`已从 ${file.name} 匹配像素图 ${matchedPixelConfig.name}，并新增当前类型关卡 ${addedLevel.id}。`)
+      setStatusMessage(t("已从 {0} 匹配像素图 {1}，并新增当前类型关卡 {2}。", file.name, matchedPixelConfig.name, addedLevel.id))
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : '未知错误'
-      setStatusMessage(`从 map 文件新增关卡失败：${message}`)
+      const message = error instanceof Error ? error.message : t("未知错误")
+      setStatusMessage(t("从 map 文件新增关卡失败：{0}", message))
     } finally {
       event.target.value = ''
     }
@@ -537,13 +538,13 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       serializeLevelConfigFile(normalizedLevels),
       buildLevelConfigFilename(levelType)
     )
-    setStatusMessage(`已导出 ${buildLevelConfigFilename(levelType)}。`)
+    setStatusMessage(t("已导出 {0}。", buildLevelConfigFilename(levelType)))
   }
 
   const handleAddLevel = () => {
     const pixelConfig = pixelConfigMap.get(selectedPixelId)
     if (!pixelConfig) {
-      setStatusMessage('请先导入 pixelconfig 并选择一个像素图记录。')
+      setStatusMessage(t("请先导入 pixelconfig 并选择一个像素图记录。"))
       return
     }
 
@@ -560,7 +561,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       ...previous,
       [addedLevel.id]: JSON.stringify(addedLevel.propConfigs, null, 2)
     }))
-    setStatusMessage(`已为像素图 ${pixelConfig.name} 新增关卡 ${addedLevel.id}。`)
+    setStatusMessage(t("已为像素图 {0} 新增关卡 {1}。", pixelConfig.name, addedLevel.id))
   }
 
   const updateLevel = <K extends keyof LevelConfigItem>(
@@ -597,16 +598,16 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
           [prepared.focusedId!]: true
         }))
       }
-      setStatusMessage(`已保存关卡 ${prepared.focusedId ?? levelId} 修改：${buildInternalLevelConfigPath(levelType)}。`)
+      setStatusMessage(t("已保存关卡 {0} 修改：{1}。", prepared.focusedId ?? levelId, buildInternalLevelConfigPath(levelType)))
     } catch (error: unknown) {
-      setStatusMessage(`保存关卡修改失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("保存关卡修改失败：{0}", getErrorMessage(error)))
     }
   }
 
   const handleDeleteLevel = async (targetId: number | string) => {
     const target = levels.find((item) => item.id === targetId)
     if (!target) return
-    const confirmed = window.confirm(`确认删除关卡 ${target.id} 吗？`)
+    const confirmed = window.confirm(t("确认删除关卡 {0} 吗？", target.id))
     if (!confirmed) return
     const nextLevels = normalizeLevelsForSave(isDaily
       ? levels.filter((item) => item.id !== targetId)
@@ -617,9 +618,9 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       setLevels(nextLevels)
       syncLevelIdDrafts(nextLevels)
       syncPropConfigDrafts(nextLevels)
-      setStatusMessage(`已删除关卡 ${target.id}，并保存到 ${buildInternalLevelConfigPath(levelType)}。`)
+      setStatusMessage(t("已删除关卡 {0}，并保存到 {1}。", target.id, buildInternalLevelConfigPath(levelType)))
     } catch (error: unknown) {
-      setStatusMessage(`删除关卡失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("删除关卡失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -629,10 +630,10 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
       const parsed = JSON.parse(draft) as unknown
       const normalized = Array.isArray(parsed) ? parsed : []
       updateLevel(levelId, 'propConfigs', normalized)
-      setStatusMessage(`已更新关卡 ${levelId} 的 propConfigs。`)
+      setStatusMessage(t("已更新关卡 {0} 的 propConfigs。", levelId))
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : '未知错误'
-      setStatusMessage(`关卡 ${levelId} 的 propConfigs JSON 无效：${message}`)
+      const message = error instanceof Error ? error.message : t("未知错误")
+      setStatusMessage(t("关卡 {0} 的 propConfigs JSON 无效：{1}", levelId, message))
     }
   }
 
@@ -668,19 +669,14 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
           style={{ display: 'none' }}
           onChange={handleImportThumbnails}
         />
-        <button type="button" onClick={() => pixelConfigInputRef.current?.click()}>
-          导入 pixelconfig
-        </button>
-        <button type="button" onClick={() => levelConfigInputRef.current?.click()}>
-          导入当前类型 levelconfig
-        </button>
+        <button type="button" onClick={() => pixelConfigInputRef.current?.click()}>{t("导入 pixelconfig")}</button>
+        <button type="button" onClick={() => levelConfigInputRef.current?.click()}>{t("导入当前类型 levelconfig")}</button>
         <button
           type="button"
           onClick={() => {
             void handleLoadInternalLevelConfig()
           }}
-        >
-          加载内部 {buildLevelConfigFilename(levelType).replace(/\.json$/, '')}
+        >{t("加载内部")}{' '}{buildLevelConfigFilename(levelType).replace(/\.json$/, '')}
         </button>
         <button
           type="button"
@@ -688,8 +684,7 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
             void handleSaveInternalLevelConfig()
           }}
           disabled={levels.length === 0}
-        >
-          保存内部 {buildLevelConfigFilename(levelType).replace(/\.json$/, '')}
+        >{t("保存内部")}{' '}{buildLevelConfigFilename(levelType).replace(/\.json$/, '')}
         </button>
         {levelType === 1 && (
           <button
@@ -699,50 +694,42 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
             }}
             disabled={levels.length === 0 || isGeneratingReview}
           >
-            {isGeneratingReview ? '正在生成网页…' : '更新网页阅览'}
+            {isGeneratingReview ? t("正在生成网页…") : t("更新网页阅览")}
           </button>
         )}
-        <button type="button" onClick={() => mapImportInputRef.current?.click()}>
-          从 map 文件新增关卡
-        </button>
-        <button type="button" onClick={() => thumbnailInputRef.current?.click()}>
-          扫描缩略图目录
-        </button>
+        <button type="button" onClick={() => mapImportInputRef.current?.click()}>{t("从 map 文件新增关卡")}</button>
+        <button type="button" onClick={() => thumbnailInputRef.current?.click()}>{t("扫描缩略图目录")}</button>
         <select
           value={selectedPixelId}
           onChange={(event) => setSelectedPixelId(Number.parseInt(event.target.value, 10) || 0)}
           className="level-config-select"
         >
-          <option value={0}>选择像素图</option>
+          <option value={0}>{t("选择像素图")}</option>
           {pixelConfigs.map((item) => (
             <option key={item.id} value={item.id}>
               {item.id} - {item.name}
             </option>
           ))}
         </select>
-        <button type="button" onClick={handleAddLevel} disabled={pixelConfigs.length === 0 || selectedPixelId === 0}>
-          新增关卡
-        </button>
-        <button type="button" onClick={handleExport} disabled={levels.length === 0}>
-          导出当前类型关卡
-        </button>
+        <button type="button" onClick={handleAddLevel} disabled={pixelConfigs.length === 0 || selectedPixelId === 0}>{t("新增关卡")}</button>
+        <button type="button" onClick={handleExport} disabled={levels.length === 0}>{t("导出当前类型关卡")}</button>
       </div>
 
-      <PixelMetadataSummary pixelConfig={selectedPixelConfig} title="当前选择图片元信息" />
+      <PixelMetadataSummary pixelConfig={selectedPixelConfig} title={t("当前选择图片元信息")} />
 
       <div className="pixel-config-status">{statusMessage}</div>
 
       <div className="level-config-summary">
-        <div>页面：{pageTitle}</div>
-        <div>{isDaily ? '配置：dailylevelconfig.json' : `类型：${levelType}`}</div>
-        <div>当前关卡数量：{levels.length}</div>
-        <div>可用像素图数量：{pixelConfigs.length}</div>
-        <div>当前 pixelconfig：{loadedPixelConfigName}</div>
-        <div>已导入缩略图数量：{Object.keys(thumbnailUrls).length}</div>
+        <div>{t("页面：")}{pageTitle}</div>
+        <div>{isDaily ? t("配置：dailylevelconfig.json") : t("类型：{0}", levelType)}</div>
+        <div>{t("当前关卡数量：")}{levels.length}</div>
+        <div>{t("可用像素图数量：")}{pixelConfigs.length}</div>
+        <div>{t("当前 pixelconfig：")}{loadedPixelConfigName}</div>
+        <div>{t("已导入缩略图数量：")}{Object.keys(thumbnailUrls).length}</div>
       </div>
 
       {displayedLevels.length === 0 && (
-        <div className="pixel-config-empty-main">当前类型暂无关卡，请导入配置或从像素图新增。</div>
+        <div className="pixel-config-empty-main">{t("当前类型暂无关卡，请导入配置或从像素图新增。")}</div>
       )}
 
       <div className="level-config-list">
@@ -770,18 +757,18 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
               <summary className="level-config-card-summary">
                 <span className="level-config-card-summary-thumbnail">
                   {thumbnailUrl ? (
-                    <img src={thumbnailUrl} alt={`${thumbnailName} 缩略图`} />
+                    <img src={thumbnailUrl} alt={t("{0} 缩略图", thumbnailName)} />
                   ) : pixelConfig ? (
                     <LevelMatrixThumbnail pixelConfig={pixelConfig} />
                   ) : (
-                    <span>无图</span>
+                    <span>{t("无图")}</span>
                   )}
                 </span>
                 <span>#{level.id}</span>
                 <span>{pixelConfig?.name ?? `pixel ${level.pixelImageId}`}</span>
                 <span>thumbnail: {level.thumbnail || '-'}</span>
-                <span>步数: 暂不评估</span>
-                <span>难度分: 暂不评估</span>
+                <span>{t("步数: 暂不评估")}</span>
+                <span>{t("难度分: 暂不评估")}</span>
               </summary>
 
               {isOpen && (
@@ -949,22 +936,20 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
               </div>
 
               <div className="level-config-meta">
-                <div>像素图名称：{pixelConfig?.name ?? '未关联'}</div>
-                <div>缩略图文件：{thumbnailName ? `${thumbnailName}.png` : '未填写'}</div>
-                <div>评估结果：暂不评估，后续整体调整步数与建议配置。</div>
+                <div>{t("像素图名称：")}{pixelConfig?.name ?? t("未关联")}</div>
+                <div>{t("缩略图文件：")}{thumbnailName ? `${thumbnailName}.png` : t("未填写")}</div>
+                <div>{t("评估结果：暂不评估，后续整体调整步数与建议配置。")}</div>
               </div>
 
-              <PixelMetadataSummary pixelConfig={pixelConfig} title="图片元信息" />
+              <PixelMetadataSummary pixelConfig={pixelConfig} title={t("图片元信息")} />
 
               {thumbnailUrl ? (
                 <div className="level-config-thumbnail-block">
-                  <div className="level-config-thumbnail-title">缩略图预览</div>
+                  <div className="level-config-thumbnail-title">{t("缩略图预览")}</div>
                   <img src={thumbnailUrl} alt={thumbnailName} className="level-config-thumbnail-image" />
                 </div>
               ) : thumbnailName ? (
-                <div className="level-config-thumbnail-fallback">
-                  未找到 `{thumbnailName}.png`，当前使用矩阵预览兜底。
-                </div>
+                <div className="level-config-thumbnail-fallback">{t("未找到 `")}{thumbnailName}{t(".png`，当前使用矩阵预览兜底。")}</div>
               ) : null}
 
               <label className="pixel-config-resource-field">
@@ -979,26 +964,20 @@ export const LevelConfigPage: React.FC<LevelConfigPageProps> = ({
                 />
               </label>
               <div className="level-config-actions">
-                <button type="button" onClick={() => handleApplyPropConfigs(level.id)}>
-                  应用 propConfigs
-                </button>
+                <button type="button" onClick={() => handleApplyPropConfigs(level.id)}>{t("应用 propConfigs")}</button>
                 <button
                   type="button"
                   data-level-save-button="true"
                   onClick={() => {
                     void handleSaveLevelEdits(level.id)
                   }}
-                >
-                  保存当前关卡
-                </button>
+                >{t("保存当前关卡")}</button>
                 <button
                   type="button"
                   onClick={() => {
                     void handleDeleteLevel(level.id)
                   }}
-                >
-                  删除关卡
-                </button>
+                >{t("删除关卡")}</button>
               </div>
 
               {pixelConfig && (

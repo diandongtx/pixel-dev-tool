@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ColorPalette } from './ColorPalette'
 import type { RGBColor } from '../types/grid'
@@ -483,7 +484,7 @@ export function PixelGridEditorSurface({
     const duplicateColor = indexedColors.find((item) => item.id !== indexId && isSameRgbColor(item.color, nextColor))
     const shouldPromptOnDuplicate = options?.promptOnDuplicate ?? true
     const shouldMerge = duplicateColor && shouldPromptOnDuplicate
-      ? window.confirm('当前颜色与已有索引色重复，是否合并？')
+      ? window.confirm(t("当前颜色与已有索引色重复，是否合并？"))
       : false
 
     pushHistorySnapshot()
@@ -829,27 +830,21 @@ export function PixelGridEditorSurface({
             }
           }}
           className={showColorPalette ? 'active' : ''}
-        >
-          🎨 调色板
-        </button>
+        >{t("🎨 调色板")}</button>
         <button
           type="button"
           data-testid="pixel-eraser-tool"
           onClick={() => onGridEditToolChange(gridEditTool === 'erase' ? 'paint' : 'erase')}
           className={gridEditTool === 'erase' ? 'active' : ''}
-          title="橡皮：擦除为 -2 空位"
-        >
-          橡皮
-        </button>
+          title={t("橡皮：擦除为 -2 空位")}
+        >{t("橡皮")}</button>
         <button
           type="button"
           data-testid="pixel-move-subject-tool"
           onClick={() => onGridEditToolChange(gridEditTool === 'moveSubject' ? 'paint' : 'moveSubject')}
           className={isMoveSubjectTool ? 'active' : ''}
-          title="移动主体：按住拖动即可整体平移非背景色块，松手生效，可撤销"
-        >
-          移动主体
-        </button>
+          title={t("移动主体：按住拖动即可整体平移非背景色块，松手生效，可撤销")}
+        >{t("移动主体")}</button>
         {canEditBackgroundColor && (
           <button
             ref={backgroundButtonRef}
@@ -862,14 +857,14 @@ export function PixelGridEditorSurface({
               }
             }}
             className={showBackgroundColorPalette ? 'active background-color-tool' : 'background-color-tool'}
-            title="背景色：设置画布背景色（已有背景则替换，没有则新增并填充空位）"
+            title={t("背景色：设置画布背景色（已有背景则替换，没有则新增并填充空位）")}
           >
-            <span>背景色</span>
+            <span>{t("背景色")}</span>
             <span className="background-color-preview" style={{ backgroundColor }} />
           </button>
         )}
         <span className="canvas-size-controls" data-testid="canvas-size-controls">
-          <label htmlFor="canvas-width-input">画布</label>
+          <label htmlFor="canvas-width-input">{t("画布")}</label>
           <input
             id="canvas-width-input"
             type="number"
@@ -896,10 +891,8 @@ export function PixelGridEditorSurface({
             data-testid="canvas-resize-apply"
             onClick={handleApplyCanvasSize}
             disabled={width === 0 || height === 0}
-            title="调整画布格子数：左上角锚定，扩边用背景色填充，缩边裁掉右侧/下侧"
-          >
-            调整尺寸
-          </button>
+            title={t("调整画布格子数：左上角锚定，扩边用背景色填充，缩边裁掉右侧/下侧")}
+          >{t("调整尺寸")}</button>
         </span>
         {toolbarAfter}
       </div>
@@ -911,7 +904,7 @@ export function PixelGridEditorSurface({
             onColorChange={handlePaletteColorChange}
             recentColors={recentColors}
           />
-          <div className="panel-tip">提示：按住 Alt 键并点击可从画布或图片吸色</div>
+          <div className="panel-tip">{t("提示：按住 Alt 键并点击可从画布或图片吸色")}</div>
         </div>
       )}
 
@@ -922,7 +915,7 @@ export function PixelGridEditorSurface({
             onColorChange={handleBackgroundColorChange}
             recentColors={recentColors}
             defaultColors={indexedColorHexOptions}
-            defaultColorsTitle="索引色"
+            defaultColorsTitle={t("索引色")}
           />
           <button
             type="button"
@@ -931,16 +924,14 @@ export function PixelGridEditorSurface({
               setColorPickTarget('background')
               onPickingColorChange(true)
             }}
-          >
-            屏幕取色
-          </button>
-          <div className="panel-tip">提示：点击「索引色」＝指定该颜色为背景判断依据；选择其他新颜色＝设置背景色（已有背景则替换，没有则新增并填满空位）</div>
+          >{t("屏幕取色")}</button>
+          <div className="panel-tip">{t("提示：点击「索引色」＝指定该颜色为背景判断依据；选择其他新颜色＝设置背景色（已有背景则替换，没有则新增并填满空位）")}</div>
         </div>
       )}
 
       <div className="canvases">
         <div className="canvas-panel">
-          <h3>原始图片</h3>
+          <h3>{t("原始图片")}</h3>
           <canvas ref={(node) => setRefValue(sourceCanvasRef, node)} style={{ display: 'none' }} />
           {originalImageSrc && (
             <img
@@ -956,7 +947,7 @@ export function PixelGridEditorSurface({
         </div>
 
         <div className="canvas-panel">
-          <h3>处理后的网格</h3>
+          <h3>{t("处理后的网格")}</h3>
           <canvas
             ref={(node) => {
               internalProcessedCanvasRef.current = node
@@ -984,7 +975,7 @@ export function PixelGridEditorSurface({
       </div>
 
       <div className="color-info">
-        <h3>索引色显示</h3>
+        <h3>{t("索引色显示")}</h3>
         <div className="indexed-colors" ref={indexListRef}>
           {indexedColors.map((item) => (
             <button
@@ -1021,7 +1012,7 @@ export function PixelGridEditorSurface({
             >
               <div className="index-color-preview" style={{ backgroundColor: rgbToCss(item.color) }} />
               <span className="index-item-text">
-                ID: {item.id} 数量: {indexUsageCount.get(item.id) ?? 0}
+                ID: {item.id}{' '}{t("数量:")}{' '}{indexUsageCount.get(item.id) ?? 0}
               </span>
             </button>
           ))}
@@ -1030,7 +1021,7 @@ export function PixelGridEditorSurface({
 
       {activeIndexId !== null && (
         <div className="index-panel" ref={indexPanelRef}>
-          <h4>索引色设置</h4>
+          <h4>{t("索引色设置")}</h4>
           <div className="panel-row">
             <label>HEX</label>
             <input
@@ -1040,7 +1031,7 @@ export function PixelGridEditorSurface({
             />
           </div>
           <div className="panel-row">
-            <label>色块</label>
+            <label>{t("色块")}</label>
             <input
               type="color"
               value={hexToRgb(hexInput) ? hexInput : '#000000'}
@@ -1048,26 +1039,22 @@ export function PixelGridEditorSurface({
             />
           </div>
           <div className="panel-actions">
-            <button type="button" onClick={applyHexInputToActiveColor}>应用颜色</button>
+            <button type="button" onClick={applyHexInputToActiveColor}>{t("应用颜色")}</button>
             <button
               type="button"
               onClick={() => {
                 setColorPickTarget('index')
                 onPickingColorChange(true)
               }}
-            >
-              屏幕取色
-            </button>
-            <button type="button" onClick={handleUndo} disabled={indexColorHistory.length === 0}>撤销</button>
+            >{t("屏幕取色")}</button>
+            <button type="button" onClick={handleUndo} disabled={indexColorHistory.length === 0}>{t("撤销")}</button>
           </div>
-          <div className="panel-tip">提示：可按住 Alt 进入取色，点击空白区域关闭面板并复位高亮</div>
+          <div className="panel-tip">{t("提示：可按住 Alt 进入取色，点击空白区域关闭面板并复位高亮")}</div>
         </div>
       )}
 
       {isPickingColor && (
-        <div className="color-picker-status">
-          颜色选择模式（点击任意画布或图片取色）
-        </div>
+        <div className="color-picker-status">{t("颜色选择模式（点击任意画布或图片取色）")}</div>
       )}
     </>
   )

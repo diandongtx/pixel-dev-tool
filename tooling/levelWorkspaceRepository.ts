@@ -1,3 +1,4 @@
+import { t } from '../src/i18n'
 import { Buffer } from 'node:buffer'
 import { copyFile, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -91,7 +92,7 @@ const normalizeName = (name: string): string => {
   )
 
   if (!normalized || normalized === '.' || normalized === '..' || hasInvalidCharacter) {
-    throw new Error('名称不能包含路径或非法字符')
+    throw new Error(t("名称不能包含路径或非法字符"))
   }
 
   return normalized
@@ -103,7 +104,7 @@ const assertInside = (parent: string, child: string): string => {
     return child
   }
 
-  throw new Error('路径越界')
+  throw new Error(t("路径越界"))
 }
 
 const readJsonOrDefault = async <T>(filePath: string, fallback: T): Promise<T> => {
@@ -202,7 +203,7 @@ export const createLevelWorkspaceRepository = ({
 
   const getLevelConfigPath = (type: number): string => {
     if (!Number.isInteger(type) || type <= 0) {
-      throw new Error('levelconfig 类型必须是正整数')
+      throw new Error(t("levelconfig 类型必须是正整数"))
     }
 
     return path.join(configDir, buildLevelConfigFilename(type))

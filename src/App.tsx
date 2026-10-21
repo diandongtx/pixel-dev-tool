@@ -1,3 +1,5 @@
+import { t, getLocale, type Locale } from './i18n'
+import { changeLanguage } from './i18n/browser'
 import { useState } from 'react'
 import './App.css'
 import { ImageProcessor } from './components/ImageProcessor'
@@ -32,71 +34,63 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Pixel Grid Analyzer</h1>
+      <header className="app-header">
+        <h1>Pixel Dev Tool</h1>
+        <label className="language-control">
+          Language / 语言
+          <select aria-label="Language / 语言" value={getLocale()}
+            onChange={(event) => changeLanguage(event.target.value as Locale)}>
+            <option value="en">English</option>
+            <option value="zh-CN">中文</option>
+          </select>
+        </label>
+      </header>
       <div className="page-switch">
         <button
           type="button"
           className={activePage === 'pixel' ? 'active' : ''}
           onClick={() => setActivePage('pixel')}
-        >
-          像素化页面
-        </button>
+        >{t("像素化页面")}</button>
         <button
           type="button"
           className={activePage === 'bead' ? 'active' : ''}
           onClick={() => setActivePage('bead')}
-        >
-          拼豆关卡
-        </button>
+        >{t("拼豆关卡")}</button>
         <button
           type="button"
           className={activePage === 'bead-debug' ? 'active' : ''}
           onClick={() => setActivePage('bead-debug')}
-        >
-          豆子调试
-        </button>
+        >{t("豆子调试")}</button>
         <button
           type="button"
           className={activePage === 'level-production' ? 'active' : ''}
           onClick={() => setActivePage('level-production')}
-        >
-          关卡工作台
-        </button>
+        >{t("关卡工作台")}</button>
         <button
           type="button"
           className={activePage === 'pixel-config' ? 'active' : ''}
           onClick={() => setActivePage('pixel-config')}
-        >
-          像素图管理
-        </button>
+        >{t("像素图管理")}</button>
         <button
           type="button"
           className={activePage === 'theme-config' ? 'active' : ''}
           onClick={() => setActivePage('theme-config')}
-        >
-          主题管理
-        </button>
+        >{t("主题管理")}</button>
         <button
           type="button"
           className={activePage === 'main-level' ? 'active' : ''}
           onClick={() => setActivePage('main-level')}
-        >
-          主线关卡管理
-        </button>
+        >{t("主线关卡管理")}</button>
         <button
           type="button"
           className={activePage === 'daily-level' ? 'active' : ''}
           onClick={() => setActivePage('daily-level')}
-        >
-          每日挑战管理
-        </button>
+        >{t("每日挑战管理")}</button>
         <button
           type="button"
           className={activePage === 'bead-region' ? 'active' : ''}
           onClick={() => setActivePage('bead-region')}
-        >
-          豆子区域统计
-        </button>
+        >{t("豆子区域统计")}</button>
       </div>
       {showGridControls && (
         <div className="grid-size-control">
@@ -113,7 +107,8 @@ function App() {
           />
           {activePage === 'pixel' && gridSizeSuggestion ? (
             <span className="grid-size-suggestion" style={{ marginLeft: 8 }}>
-              建议 Grid Size: {gridSizeSuggestion.cellSize}px（{gridSizeSuggestion.confidence === 'low' ? '低' : '中'}置信度）
+              {t('建议 Grid Size: {0}px（{1}置信度）', gridSizeSuggestion.cellSize,
+                gridSizeSuggestion.confidence === 'low' ? t('低') : t('中'))}
             </span>
           ) : null}
           <label htmlFor="colorTolerance" style={{ marginLeft: 12 }}>Color Tolerance: </label>
@@ -132,15 +127,11 @@ function App() {
             <button
               type="button"
               onClick={() => setGridRefreshVersion((version) => version + 1)}
-            >
-              更新网格和色差
-            </button>
+            >{t("更新网格和色差")}</button>
           )}
           {activePage === 'bead' && (
             <>
-              <label htmlFor="useSubjectGrid" style={{ marginLeft: 12 }}>
-                拼豆用主体网格
-              </label>
+              <label htmlFor="useSubjectGrid" style={{ marginLeft: 12 }}>{t("拼豆用主体网格")}</label>
               <input
                 id="useSubjectGrid"
                 type="checkbox"
@@ -197,7 +188,7 @@ function App() {
       {activePage === 'main-level' && (
         <LevelConfigPage
           levelType={1}
-          pageTitle="主线关卡管理"
+          pageTitle={t("主线关卡管理")}
           pixelConfigs={pixelConfigs}
           onPixelConfigsChange={setPixelConfigs}
           loadedPixelConfigName={loadedPixelConfigName}
@@ -207,7 +198,7 @@ function App() {
       {activePage === 'daily-level' && (
         <LevelConfigPage
           levelType={2}
-          pageTitle="每日挑战管理"
+          pageTitle={t("每日挑战管理")}
           pixelConfigs={pixelConfigs}
           onPixelConfigsChange={setPixelConfigs}
           loadedPixelConfigName={loadedPixelConfigName}

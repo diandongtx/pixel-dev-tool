@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import type { GridData } from '../types/grid'
 import { cloneGridData } from './gridData'
 import { EXTERNAL_BACKGROUND_INDEX, getExternalBackgroundMask } from './subjectGrid'
@@ -1665,13 +1666,13 @@ export const estimateLevelRestoreSteps = (
 ): LevelStepEstimate => {
   const normalizedTemporarySlotCount = Math.max(0, Math.floor(temporarySlotCount))
   if (target.width !== current.width || target.height !== current.height) {
-    return createInvalidStepEstimate('目标网格与当前网格尺寸不一致', normalizedTemporarySlotCount)
+    return createInvalidStepEstimate(t("目标网格与当前网格尺寸不一致"), normalizedTemporarySlotCount)
   }
 
   const width = target.width
   const height = target.height
   if (width <= 0 || height <= 0) {
-    return createInvalidStepEstimate('网格尺寸无效', normalizedTemporarySlotCount)
+    return createInvalidStepEstimate(t("网格尺寸无效"), normalizedTemporarySlotCount)
   }
 
   const board = cloneBoard(current.colorIndices)
@@ -1687,7 +1688,7 @@ export const estimateLevelRestoreSteps = (
 
       if (targetValue === EXTERNAL_BACKGROUND_INDEX && currentValue !== EXTERNAL_BACKGROUND_INDEX) {
         return createInvalidStepEstimate(
-          '当前网格存在目标图外像素，无法估算',
+          t("当前网格存在目标图外像素，无法估算"),
           normalizedTemporarySlotCount,
           imageSpareSlotCount
         )
@@ -1695,7 +1696,7 @@ export const estimateLevelRestoreSteps = (
 
       if (targetValue !== EXTERNAL_BACKGROUND_INDEX && currentValue === EXTERNAL_BACKGROUND_INDEX) {
         return createInvalidStepEstimate(
-          '当前网格的可玩区域与目标图不一致',
+          t("当前网格的可玩区域与目标图不一致"),
           normalizedTemporarySlotCount,
           imageSpareSlotCount
         )
@@ -1721,7 +1722,7 @@ export const estimateLevelRestoreSteps = (
   for (const colorId of allColors) {
     if ((currentColorCounts.get(colorId) ?? 0) !== (targetColorCounts.get(colorId) ?? 0)) {
       return createInvalidStepEstimate(
-        `颜色 ${colorId} 的像素数量不一致`,
+        t("颜色 {0} 的像素数量不一致", colorId),
         normalizedTemporarySlotCount,
         imageSpareSlotCount,
         occupiedSlotCount,
@@ -1815,7 +1816,7 @@ export const estimateLevelRestoreSteps = (
 
     if (!bestAction) {
       return createInvalidStepEstimate(
-        '当前规则下没有可执行的下一步操作',
+        t("当前规则下没有可执行的下一步操作"),
         normalizedTemporarySlotCount,
         imageSpareSlotCount,
         occupiedSlotCount,
@@ -1838,7 +1839,7 @@ export const estimateLevelRestoreSteps = (
   }
 
   return createInvalidStepEstimate(
-    '模拟步数超过上限，当前启发式策略未能完成复原',
+    t("模拟步数超过上限，当前启发式策略未能完成复原"),
     normalizedTemporarySlotCount,
     imageSpareSlotCount,
     occupiedSlotCount,

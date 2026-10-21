@@ -4,9 +4,9 @@
 
 A local web tool for turning pixel art into bead-puzzle levels. Inspect image grids, edit pixels, preview bead colors, generate starting layouts, and manage level JSON in one React + TypeScript application.
 
-The interface is currently in Chinese. This is an early public release extracted from a working development tool. It includes original geometric demo assets; production artwork, game levels, credentials, and internal history are not included.
+The interface defaults to English, with a Chinese language switch in the header. Save your work before switching: the page reloads. This is an early public release extracted from a working development tool. It includes original geometric demo assets; production artwork, game levels, credentials, and internal history are not included.
 
-![Pixel Dev Tool running with the original geometric demo](docs/preview.png)
+![Pixel Dev Tool running with the original geometric demo](docs/preview-en.png)
 
 ## Features
 
@@ -33,11 +33,11 @@ Use `npm run dev` for the complete application. The local filesystem API is prov
 
 ## Try the examples
 
-Follow the [first-run walkthrough](docs/TRYOUT.md), watch the [60-second screenshot walkthrough](https://github.com/diandongtx/pixel-dev-tool/releases/download/v0.1.0/pixel-dev-tool-walkthrough.mp4), or submit [tryout feedback](https://github.com/diandongtx/pixel-dev-tool/issues/new?template=tryout.yml).
+Follow the [first-run walkthrough](docs/TRYOUT.md), watch the [v0.1.0 Chinese-interface screenshot walkthrough](https://github.com/diandongtx/pixel-dev-tool/releases/download/v0.1.0/pixel-dev-tool-walkthrough.mp4), or submit [tryout feedback](https://github.com/diandongtx/pixel-dev-tool/issues/new?template=tryout.yml).
 
-1. On **像素化页面**, select `examples/geometric-mosaic.png`; its source cells are 10 × 10 pixels.
-2. On **关卡工作台**, import `examples/geometric-mosaic-map.json` to try matching against the bundled six-color bead catalog.
-3. On **像素图管理**, import `examples/pixelconfig.json`. On **主线关卡管理**, import `examples/levelconfig.json` to inspect the matching level. Use the page's save action when you want to persist imported data.
+1. On **Pixel editor**, select `examples/geometric-mosaic.png`; its source cells are 10 × 10 pixels.
+2. On **Level workbench**, import `examples/geometric-mosaic-map.json` to try matching against the bundled six-color bead catalog.
+3. On **Pixel library**, import `examples/pixelconfig.json`. On **Main levels**, import `examples/levelconfig.json` to inspect the matching level. Use the page's save action when you want to persist imported data.
 
 The sample is a geometric exercise, not a tuned game level. Layout generation reports quality metrics; a candidate may fail its quality criteria and need manual review.
 
@@ -62,6 +62,7 @@ Tests use synthetic examples and temporary workspaces. Private production-image 
 ```text
 src/components/     Editors and preview pages
 src/utils/          Image, grid, configuration and generation logic
+src/i18n/           English catalog and language selection
 src/beads/          Layer renderer and color transformations
 tooling/            Local workspace API and review generation
 examples/           Original geometric PNG and JSON examples

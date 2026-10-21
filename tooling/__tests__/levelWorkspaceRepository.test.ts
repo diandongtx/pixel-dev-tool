@@ -346,7 +346,7 @@ describe('level workspace repository', () => {
   it('rejects unsafe draft and asset names', async () => {
     const repository = await createRepository()
 
-    await expect(repository.saveDraft({ name: '../bad', map: mapGrid })).rejects.toThrow('名称不能包含路径或非法字符')
-    await expect(repository.saveThumbnail('bad/name', Uint8Array.from([]))).rejects.toThrow('名称不能包含路径或非法字符')
+    await expect(repository.saveDraft({ name: '../bad', map: mapGrid })).rejects.toThrow('Names cannot contain paths or invalid characters')
+    await expect(repository.saveThumbnail('bad/name', Uint8Array.from([]))).rejects.toThrow('Names cannot contain paths or invalid characters')
   })
 })

@@ -57,17 +57,17 @@ const toPixelMetadata = (pixel: PixelConfigItem): MainLevelReviewPixelMetadata =
 })
 
 const prefixWarning = (levelId: number, diagnostic: string): string =>
-  `关卡 ${levelId}：${diagnostic}`
+  `Level ${levelId}: ${diagnostic}`
 
 export const buildMainLevelReviewRecords = (
   request: MainLevelReviewGenerateRequest,
   availableBeadFiles: Iterable<string>
 ): MainLevelReviewBuildResult => {
   if (!request || !Array.isArray(request.levels)) {
-    throw new Error('关卡配置 levels 必须是数组')
+    throw new Error('Level configuration levels must be an array')
   }
   if (!Array.isArray(request.pixelConfigs)) {
-    throw new Error('像素图配置 pixelConfigs 必须是数组')
+    throw new Error('Image configuration pixelConfigs must be an array')
   }
 
   const beadFiles = new Set(availableBeadFiles)
@@ -83,7 +83,7 @@ export const buildMainLevelReviewRecords = (
       const level = cloneLevel(sourceLevel)
       const pixel = pixelsById.get(level.pixelImageId)
       if (!pixel) {
-        const diagnostic = `未找到 pixelImageId ${level.pixelImageId} 对应的像素图配置`
+        const diagnostic = `No image configuration for pixelImageId ${level.pixelImageId}`
         warnings.push(prefixWarning(level.id, diagnostic))
         return {
           level,
@@ -99,7 +99,7 @@ export const buildMainLevelReviewRecords = (
       const pixelMetadata = toPixelMetadata(pixel)
       const localPixelResource = [...pixel.localPixelResource]
       if (!isValidInitPixel(pixel.initPixel)) {
-        const diagnostic = '预览矩阵 initPixel 不可用'
+        const diagnostic = 'Preview matrix initPixel is unavailable'
         warnings.push(prefixWarning(level.id, diagnostic))
         return {
           level,
@@ -120,14 +120,14 @@ export const buildMainLevelReviewRecords = (
       for (const colorIndex of colorIndexes) {
         const resourceName = localPixelResource[colorIndex]
         if (typeof resourceName !== 'string' || resourceName.length === 0) {
-          diagnostics.push(`颜色索引 ${colorIndex} 缺少资源名称映射`)
+          diagnostics.push(`Color index ${colorIndex} has no resource name mapping`)
           continue
         }
 
         for (const state of [2, 3]) {
           const fileName = `${resourceName}_${state}.png`
           if (!beadFiles.has(fileName)) {
-            diagnostics.push(`颜色索引 ${colorIndex} 缺少 ${fileName}`)
+            diagnostics.push(`Color index ${colorIndex} is missing ${fileName}`)
           }
         }
       }
@@ -163,11 +163,11 @@ export const renderMainLevelReviewHtml = (
   const payload = serializeForInlineScript({ generatedAt, records })
 
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>主线关卡阅览</title>
+  <title>Main level review</title>
   <style>
     :root {
       color-scheme: light;
@@ -318,19 +318,19 @@ export const renderMainLevelReviewHtml = (
   <main class="page-shell">
     <header class="review-header">
       <div>
-        <h1>主线关卡阅览</h1>
+        <h1>Main level review</h1>
         <div class="header-meta">
-          <span>关卡总数：<strong id="total-levels">0</strong></span>
-          <span>生成时间：<strong id="generated-time"></strong></span>
+          <span>Total levels: <strong id="total-levels">0</strong></span>
+          <span>Generated: <strong id="generated-time"></strong></span>
         </div>
       </div>
-      <div class="page-summary">第 <span id="current-page">1</span> / <span id="total-pages">1</span> 页</div>
+      <div class="page-summary">Page <span id="current-page">1</span> / <span id="total-pages">1</span></div>
     </header>
-    <nav class="pager" id="top-pager" aria-label="顶部翻页"></nav>
+    <nav class="pager" id="top-pager" aria-label="Top pagination"></nav>
     <div class="review-scroll">
       <section id="review-list" aria-live="polite"></section>
     </div>
-    <nav class="pager" id="bottom-pager" aria-label="底部翻页"></nav>
+    <nav class="pager" id="bottom-pager" aria-label="Bottom pagination"></nav>
   </main>
   <script>
     (function () {
@@ -390,8 +390,8 @@ export const renderMainLevelReviewHtml = (
         const pixel = record.pixel || {};
         const hasMatrix = Array.isArray(record.initPixel) && record.initPixel.length > 0;
         const preview = hasMatrix
-          ? '<canvas data-preview-index="' + recordIndex + '" aria-label="豆子预览"></canvas>'
-          : '<div class="preview-message">预览矩阵缺失，无法显示豆子预览</div>';
+          ? '<canvas data-preview-index="' + recordIndex + '" aria-label="Bead preview"></canvas>'
+          : '<div class="preview-message">Missing preview matrix; bead preview unavailable</div>';
         const propConfigs = prettyJson(Array.isArray(level.propConfigs) ? level.propConfigs : []);
 
         return '<article class="level-row">'
@@ -399,32 +399,32 @@ export const renderMainLevelReviewHtml = (
           + '<div class="preview-panel">' + preview + '</div>'
           + '<div class="level-data">'
           + '<div class="primary-metrics">'
-          + '<div class="metric"><span class="metric-label">颜色数量</span><span class="metric-value">'
+          + '<div class="metric"><span class="metric-label">Color count</span><span class="metric-value">'
           + escapeHtml(record.colorCount) + '</span></div>'
-          + '<div class="metric"><span class="metric-label">豆子数量</span><span class="metric-value">'
+          + '<div class="metric"><span class="metric-label">Bead count</span><span class="metric-value">'
           + escapeHtml(record.beadCount) + '</span></div>'
           + '</div>'
           + '<div class="secondary-grid">'
-          + detail('缩略图', level.thumbnail)
-          + detail('类型', level.type)
-          + detail('难度', level.difficulty)
+          + detail('Thumbnail', level.thumbnail)
+          + detail('Type', level.type)
+          + detail('Difficulty', level.difficulty)
           + detail('pixelImageId', level.pixelImageId)
-          + detail('宽高', level.widthHeight)
-          + detail('最大槽位', level.storageMaxSlots)
-          + detail('槽位列数', level.storageCols)
-          + detail('初始槽位', level.storageInitialSlots)
-          + detail('广告解锁增量', level.adUnlockIncrement)
-          + detail('初始时限', level.initialTimeLimit)
-          + detail('广告时间增量', level.adTimeIncrement)
-          + detail('复活次数', level.reviveCount)
-          + '<div class="detail detail-wide"><span class="detail-label">道具配置</span>'
+          + detail('Dimensions', level.widthHeight)
+          + detail('Maximum slots', level.storageMaxSlots)
+          + detail('Storage columns', level.storageCols)
+          + detail('Initial slots', level.storageInitialSlots)
+          + detail('Slots unlocked per ad', level.adUnlockIncrement)
+          + detail('Initial time limit', level.initialTimeLimit)
+          + detail('Extra time per ad', level.adTimeIncrement)
+          + detail('Revives', level.reviveCount)
+          + '<div class="detail detail-wide"><span class="detail-label">Item configuration</span>'
           + '<pre class="detail-value prop-configs">' + escapeHtml(propConfigs) + '</pre></div>'
-          + detail('像素图名称', pixel.name)
-          + detail('主题', pixel.theme)
-          + detail('品质', pixel.quality)
-          + detail('图片类型', pixel.imageType)
-          + detail('相册 ID', pixel.albumId)
-          + detail('像素图难度', pixel.difficulty)
+          + detail('Image name', pixel.name)
+          + detail('Theme', pixel.theme)
+          + detail('Quality', pixel.quality)
+          + detail('Image type', pixel.imageType)
+          + detail('Album ID', pixel.albumId)
+          + detail('Image difficulty', pixel.difficulty)
           + '</div>'
           + diagnosticsHtml(record.diagnostics)
           + '</div>'
@@ -483,7 +483,7 @@ export const renderMainLevelReviewHtml = (
         const firstNearbyPage = Math.max(1, currentPage - 2);
         const lastNearbyPage = Math.min(totalPages, currentPage + 2);
         const controls = [
-          '<button type="button" data-action="previous"' + (currentPage === 1 ? ' disabled' : '') + '>上一页</button>'
+          '<button type="button" data-action="previous"' + (currentPage === 1 ? ' disabled' : '') + '>Previous</button>'
         ];
         for (let page = firstNearbyPage; page <= lastNearbyPage; page += 1) {
           controls.push('<button type="button" data-action="page" data-page="' + page + '"'
@@ -491,11 +491,11 @@ export const renderMainLevelReviewHtml = (
             + '>' + page + '</button>');
         }
         controls.push('<button type="button" data-action="next"'
-          + (currentPage === totalPages ? ' disabled' : '') + '>下一页</button>');
-        controls.push('<span class="jump-label">跳至</span>');
+          + (currentPage === totalPages ? ' disabled' : '') + '>Next</button>');
+        controls.push('<span class="jump-label">Go to</span>');
         controls.push('<input data-role="jump-input" type="number" min="1" max="' + totalPages
-          + '" value="' + currentPage + '" aria-label="跳转页码">');
-        controls.push('<button type="button" data-action="jump">跳转</button>');
+          + '" value="' + currentPage + '" aria-label="Page number">');
+        controls.push('<button type="button" data-action="jump">Go</button>');
         pager.innerHTML = controls.join('');
       }
 
@@ -503,7 +503,7 @@ export const renderMainLevelReviewHtml = (
         const start = (currentPage - 1) * PAGE_SIZE;
         const pageRecords = records.slice(start, start + PAGE_SIZE);
         list.innerHTML = pageRecords.length === 0
-          ? '<div class="empty-state">暂无关卡数据</div>'
+          ? '<div class="empty-state">No level data</div>'
           : pageRecords.map(function (record, index) {
             return rowHtml(record, start + index);
           }).join('');

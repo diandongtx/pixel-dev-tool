@@ -1,3 +1,5 @@
+import { themeDisplayName } from '../utils/themeConfig'
+import { t } from '../i18n'
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent, type ReactNode } from 'react'
 import type { GridData, RGBColor } from '../types/grid'
 import type { LevelConfigItem } from '../types/levelConfig'
@@ -82,27 +84,27 @@ const DRAFTS_DIR_PATH = 'data/level-workspace/drafts'
 const INTERNAL_PIXEL_CONFIG_PATH = 'data/level-workspace/config/pixelconfig.json'
 const INTERNAL_MAIN_LEVEL_CONFIG_PATH = 'data/level-workspace/config/levelconfig.json'
 const QUALITY_SEVERITY_LABELS: Record<LevelQualitySeverity, string> = {
-  pass: '通过',
-  warning: '建议检查',
-  error: '需要修正'
+  pass: t("通过"),
+  warning: t("建议检查"),
+  error: t("需要修正")
 }
 const DIFFICULTY_OPTIONS = [
-  { value: 1, label: '1 容易' },
-  { value: 2, label: '2 普通' },
-  { value: 3, label: '3 困难' },
-  { value: 4, label: '4 专家' },
-  { value: 5, label: '5 大师' }
+  { value: 1, label: t("1 容易") },
+  { value: 2, label: t("2 普通") },
+  { value: 3, label: t("3 困难") },
+  { value: 4, label: t("4 专家") },
+  { value: 5, label: t("5 大师") }
 ]
 const QUALITY_OPTIONS = [
-  { value: 1, label: '1 主线基础' },
-  { value: 2, label: '2 普通' },
-  { value: 3, label: '3 白银' },
-  { value: 4, label: '4 黄金' },
-  { value: 5, label: '5 铂金' }
+  { value: 1, label: t("1 主线基础") },
+  { value: 2, label: t("2 普通") },
+  { value: 3, label: t("3 白银") },
+  { value: 4, label: t("4 黄金") },
+  { value: 5, label: t("5 铂金") }
 ]
 const IMAGE_TYPE_OPTIONS = [
-  { value: 1, label: '1 主线' },
-  { value: 2, label: '2 套图' }
+  { value: 1, label: t("1 主线") },
+  { value: 2, label: t("2 套图") }
 ]
 
 const colorToCss = (color: RGBColor): string =>
@@ -117,7 +119,7 @@ const colorToHex = (color: RGBColor | null | undefined): string => {
 }
 
 const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : '未知错误'
+  error instanceof Error ? error.message : t("未知错误")
 
 const confirmWithBrowserFallback = (message: string): boolean => {
   if (typeof window.confirm !== 'function') {
@@ -232,9 +234,9 @@ const resolveNextPixelConfigId = async (): Promise<number> => {
 export function LevelProductionPreviewPanel({
   mapGrid,
   pointGrid,
-  emptyMessage = '请先准备 map 数据，再更新关卡预览。',
+  emptyMessage = t("请先准备 map 数据，再更新关卡预览。"),
   requiresGeneratedPointGrid = false,
-  missingPointMessage = '请先生成关卡排序，生成后的 point 会作为 initPixel 保存。',
+  missingPointMessage = t("请先生成关卡排序，生成后的 point 会作为 initPixel 保存。"),
   onMapGridChange,
   toolbarActions,
   hideDefaultToolbar = false,
@@ -253,7 +255,7 @@ export function LevelProductionPreviewPanel({
   } | null>(null)
   const manualResourceNamesRef = useRef<Record<number, string>>({})
   const draggedBeadPreviewCellRef = useRef<PreviewCellPosition | null>(null)
-  const [statusMessage, setStatusMessage] = useState('正在加载默认豆子资源目录：resource/grid')
+  const [statusMessage, setStatusMessage] = useState(t("正在加载默认豆子资源目录：resource/grid"))
   const [themeConfigs, setThemeConfigs] = useState<ThemeConfigItem[]>([])
   const [pixelMetadata, setPixelMetadata] = useState({
     theme: '',
@@ -285,10 +287,10 @@ export function LevelProductionPreviewPanel({
         if (!isActive) return
 
         setCatalog(nextCatalog)
-        setStatusMessage(`已加载默认豆子资源目录：resource/grid，共 ${nextCatalog.length} 组。`)
+        setStatusMessage(t("已加载默认豆子资源目录：resource/grid，共 {0} 组。", nextCatalog.length))
       } catch (error: unknown) {
         if (!isActive) return
-        setStatusMessage(`默认豆子资源加载失败：${getErrorMessage(error)}`)
+        setStatusMessage(t("默认豆子资源加载失败：{0}", getErrorMessage(error)))
       }
     }
 
@@ -309,7 +311,7 @@ export function LevelProductionPreviewPanel({
         setThemeConfigs(themes)
       } catch (error: unknown) {
         if (!isActive) return
-        setStatusMessage(`主题列表加载失败：${getErrorMessage(error)}`)
+        setStatusMessage(t("主题列表加载失败：{0}", getErrorMessage(error)))
       }
     }
 
@@ -600,13 +602,13 @@ export function LevelProductionPreviewPanel({
     try {
       const blob = await buildResourcePreviewBlob(grid)
       if (!blob) {
-        setStatusMessage('下载图片失败：当前浏览器无法生成预览画布。')
+        setStatusMessage(t("下载图片失败：当前浏览器无法生成预览画布。"))
         return
       }
 
       downloadBlobFile(blob, buildPreviewDownloadFilename(grid.fileName, previewKind))
     } catch (error: unknown) {
-      setStatusMessage(`下载图片失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("下载图片失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -711,10 +713,10 @@ export function LevelProductionPreviewPanel({
       const thumbnailResult = await saveLevelWorkspaceThumbnail(draftWithFreshId.name, thumbnailDataUrl)
       setNextPixelConfigId(saveId + 1)
       setStatusMessage(
-        `已保存草稿：${draftWithFreshId.name}，路径：${DRAFTS_DIR_PATH}/${draftWithFreshId.name}，缩略图：${thumbnailResult.path}`
+        t("已保存草稿：{0}，路径：{1}/{2}，缩略图：{3}", draftWithFreshId.name, DRAFTS_DIR_PATH, draftWithFreshId.name, thumbnailResult.path)
       )
     } catch (error: unknown) {
-      setStatusMessage(`保存草稿失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("保存草稿失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -759,10 +761,10 @@ export function LevelProductionPreviewPanel({
     const hasSameName = internalPixelConfigs.some((item) => item.name === currentPixelConfigWithResources.name)
     if (hasSameName) {
       const shouldReplace = confirmWithBrowserFallback(
-        `已存在名称为 ${currentPixelConfigWithResources.name} 的像素图记录，是否替换？`
+        t("已存在名称为 {0} 的像素图记录，是否替换？", currentPixelConfigWithResources.name)
       )
       if (!shouldReplace) {
-        setStatusMessage(`已取消加入内部 pixelconfig：${currentPixelConfigWithResources.name}`)
+        setStatusMessage(t("已取消加入内部 pixelconfig：{0}", currentPixelConfigWithResources.name))
         return null
       }
     }
@@ -778,7 +780,7 @@ export function LevelProductionPreviewPanel({
         : Promise.resolve({ thumbnailPath: null })
     )
     setStatusMessage(
-      `已${publishResult.action === 'replaced' ? '替换' : '加入'}内部 pixelconfig：${publishResult.item.name}，pixelImageId=${publishResult.item.id}，路径：${INTERNAL_PIXEL_CONFIG_PATH}`
+      t("已{0}内部 pixelconfig：{1}，pixelImageId={2}，路径：{3}", publishResult.action === 'replaced' ? t("替换") : t("加入"), publishResult.item.name, publishResult.item.id, INTERNAL_PIXEL_CONFIG_PATH)
     )
 
     return publishResult.item
@@ -787,25 +789,25 @@ export function LevelProductionPreviewPanel({
   const confirmQualityRisk = (): boolean => {
     if (qualityReport?.severity !== 'error') return true
 
-    return confirmWithBrowserFallback('质量预检仍有“需要修正”的问题，确认继续写入配置吗？')
+    return confirmWithBrowserFallback(t("质量预检仍有“需要修正”的问题，确认继续写入配置吗？"))
   }
 
   const handlePublishPixelConfig = async () => {
     try {
       if (!confirmQualityRisk()) {
-        setStatusMessage('已取消加入内部 pixelconfig：质量预检未通过。')
+        setStatusMessage(t("已取消加入内部 pixelconfig：质量预检未通过。"))
         return
       }
       await publishCurrentPixelConfig()
     } catch (error: unknown) {
-      setStatusMessage(`加入内部 pixelconfig 失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("加入内部 pixelconfig 失败：{0}", getErrorMessage(error)))
     }
   }
 
   const handlePublishMainLevel = async () => {
     try {
       if (!confirmQualityRisk()) {
-        setStatusMessage('已取消加入主线关卡：质量预检未通过。')
+        setStatusMessage(t("已取消加入主线关卡：质量预检未通过。"))
         return
       }
       const pixelConfigItem = await publishCurrentPixelConfig({ saveDraftAssets: false })
@@ -822,10 +824,10 @@ export function LevelProductionPreviewPanel({
       await saveLevelWorkspaceLevelConfig(DEFAULT_MAIN_LEVEL_TYPE, levelPublishResult.items)
       await ensurePublishedDraftAssets(pixelConfigItem, levelPublishResult.level)
       setStatusMessage(
-        `已加入主线关卡：levelId=${levelPublishResult.level.id}，pixelImageId=${pixelConfigItem.id}，路径：${INTERNAL_MAIN_LEVEL_CONFIG_PATH}`
+        t("已加入主线关卡：levelId={0}，pixelImageId={1}，路径：{2}", levelPublishResult.level.id, pixelConfigItem.id, INTERNAL_MAIN_LEVEL_CONFIG_PATH)
       )
     } catch (error: unknown) {
-      setStatusMessage(`加入主线关卡失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("加入主线关卡失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -989,16 +991,12 @@ export function LevelProductionPreviewPanel({
           type="button"
           onClick={handleExportMissingList}
           disabled={effectiveMatches.length === 0}
-        >
-          导出低置信度/未匹配清单
-        </button>
+        >{t("导出低置信度/未匹配清单")}</button>
         <button
           type="button"
           onClick={handleExportPixelConfigDraft}
           disabled={publishDisabled}
-        >
-          导出 pixelconfig 草稿
-        </button>
+        >{t("导出 pixelconfig 草稿")}</button>
         <button
           type="button"
           data-testid="level-production-save-draft"
@@ -1006,18 +1004,14 @@ export function LevelProductionPreviewPanel({
             void handleSaveDraft()
           }}
           disabled={publishDisabled}
-        >
-          保存草稿
-        </button>
+        >{t("保存草稿")}</button>
         <button
           type="button"
           onClick={() => {
             void handlePublishPixelConfig()
           }}
           disabled={publishDisabled}
-        >
-          加入内部 pixelconfig
-        </button>
+        >{t("加入内部 pixelconfig")}</button>
         <button
           type="button"
           data-testid="level-production-publish-main-level"
@@ -1025,9 +1019,7 @@ export function LevelProductionPreviewPanel({
             void handlePublishMainLevel()
           }}
           disabled={publishDisabled}
-        >
-          加入主线关卡
-        </button>
+        >{t("加入主线关卡")}</button>
         {toolbarActions}
       </div>
       )}
@@ -1037,23 +1029,23 @@ export function LevelProductionPreviewPanel({
         <div className="pixel-config-status">{missingPointMessage}</div>
       ) : null}
       <div className="level-production-summary">
-        <div>当前图片：{pixelConfigDraft?.name ?? '-'}</div>
-        <div>颜色数量：{mapGrid.colors.length}</div>
-        <div>默认资源组数量：{catalog.length}</div>
+        <div>{t("当前图片：")}{pixelConfigDraft?.name ?? '-'}</div>
+        <div>{t("颜色数量：")}{mapGrid.colors.length}</div>
+        <div>{t("默认资源组数量：")}{catalog.length}</div>
       </div>
 
       {qualityReport ? (
         <section className={`level-production-quality-section level-production-quality-section--${qualityReport.severity}`}>
           <div className="level-production-quality-header">
-            <h3>质量预检</h3>
+            <h3>{t("质量预检")}</h3>
             <span>{QUALITY_SEVERITY_LABELS[qualityReport.severity]}</span>
           </div>
           <div className="level-production-quality-metrics">
-            <span>尺寸 {qualityReport.metrics.width}x{qualityReport.metrics.height}</span>
-            <span>有效像素 {qualityReport.metrics.occupiedCellCount}</span>
-            <span>颜色 {qualityReport.metrics.colorCount}</span>
-            <span>相近色 {qualityReport.metrics.similarColorPairCount}</span>
-            <span>孤立像素 {qualityReport.metrics.isolatedPixelCount}</span>
+            <span>{t("尺寸")}{' '}{qualityReport.metrics.width}x{qualityReport.metrics.height}</span>
+            <span>{t("有效像素")}{' '}{qualityReport.metrics.occupiedCellCount}</span>
+            <span>{t("颜色")}{' '}{qualityReport.metrics.colorCount}</span>
+            <span>{t("相近色")}{' '}{qualityReport.metrics.similarColorPairCount}</span>
+            <span>{t("孤立像素")}{' '}{qualityReport.metrics.isolatedPixelCount}</span>
           </div>
           <div className="level-production-quality-list">
             {qualityReport.checks.map((check) => (
@@ -1077,10 +1069,10 @@ export function LevelProductionPreviewPanel({
       ) : null}
 
       <section className="level-production-level-config-section">
-        <h3>图片元数据草稿</h3>
+        <h3>{t("图片元数据草稿")}</h3>
         <div className="level-production-level-config-grid">
           <label className="level-production-level-config-field">
-            <span>主题</span>
+            <span>{t("主题")}</span>
             <select
               data-testid="pixel-metadata-theme"
               value={pixelMetadata.theme}
@@ -1091,16 +1083,16 @@ export function LevelProductionPreviewPanel({
                 }))
               }
             >
-              <option value="">未选择</option>
+              <option value="">{t("未选择")}</option>
               {themeConfigs.map((theme) => (
                 <option key={theme.theme} value={theme.theme}>
-                  {theme.themeName} ({theme.theme})
+                  {themeDisplayName(theme)} ({theme.theme})
                 </option>
               ))}
             </select>
           </label>
           <label className="level-production-level-config-field">
-            <span>难度</span>
+            <span>{t("难度")}</span>
             <select
               data-testid="pixel-metadata-difficulty"
               value={pixelMetadata.difficulty}
@@ -1114,7 +1106,7 @@ export function LevelProductionPreviewPanel({
             </select>
           </label>
           <label className="level-production-level-config-field">
-            <span>品质</span>
+            <span>{t("品质")}</span>
             <select
               data-testid="pixel-metadata-quality"
               value={pixelMetadata.quality}
@@ -1128,7 +1120,7 @@ export function LevelProductionPreviewPanel({
             </select>
           </label>
           <label className="level-production-level-config-field">
-            <span>类型</span>
+            <span>{t("类型")}</span>
             <select
               data-testid="pixel-metadata-imageType"
               value={pixelMetadata.imageType}
@@ -1142,7 +1134,7 @@ export function LevelProductionPreviewPanel({
             </select>
           </label>
           <label className="level-production-level-config-field">
-            <span>套图 ID</span>
+            <span>{t("套图 ID")}</span>
             <input
               data-testid="pixel-metadata-albumId"
               type="text"
@@ -1159,17 +1151,17 @@ export function LevelProductionPreviewPanel({
       </section>
 
       <section className="level-production-level-config-section">
-        <h3>关卡配置草稿</h3>
+        <h3>{t("关卡配置草稿")}</h3>
         <div className="level-production-level-config-grid">
           {([
-            ['difficulty', '难度'],
-            ['storageMaxSlots', '最大收纳槽'],
-            ['storageCols', '收纳列数'],
-            ['storageInitialSlots', '初始槽位'],
-            ['adUnlockIncrement', '广告解锁槽位'],
-            ['initialTimeLimit', '初始时间'],
-            ['adTimeIncrement', '广告加时'],
-            ['reviveCount', '复活次数']
+            ['difficulty', t("难度")],
+            ['storageMaxSlots', t("最大收纳槽")],
+            ['storageCols', t("收纳列数")],
+            ['storageInitialSlots', t("初始槽位")],
+            ['adUnlockIncrement', t("广告解锁槽位")],
+            ['initialTimeLimit', t("初始时间")],
+            ['adTimeIncrement', t("广告加时")],
+            ['reviveCount', t("复活次数")]
           ] as const).map(([key, label]) => (
             <label key={key} className="level-production-level-config-field">
               <span>{label}</span>
@@ -1186,10 +1178,10 @@ export function LevelProductionPreviewPanel({
       </section>
 
       <section className="level-production-preview-section">
-        <h3>关卡预览与草稿</h3>
+        <h3>{t("关卡预览与草稿")}</h3>
         <div className="level-production-preview-pair">
           <div className="level-production-preview-panel">
-            <h4>排序前豆子资源预览</h4>
+            <h4>{t("排序前豆子资源预览")}</h4>
             {renderResourcePreviewGrid(mapGrid, {
               testId: 'level-production-map-resource-preview',
               legacyTestId: 'level-production-bead-preview',
@@ -1202,12 +1194,10 @@ export function LevelProductionPreviewPanel({
               onClick={() => {
                 void handleDownloadResourcePreview(mapGrid, 'map')
               }}
-            >
-              下载图片
-            </button>
+            >{t("下载图片")}</button>
           </div>
           <div className="level-production-preview-panel">
-            <h4>排序后豆子资源预览</h4>
+            <h4>{t("排序后豆子资源预览")}</h4>
             {renderResourcePreviewGrid(pointResourcePreviewGrid, {
               testId: 'level-production-point-resource-preview',
               emptyMessage: missingPointMessage
@@ -1219,9 +1209,7 @@ export function LevelProductionPreviewPanel({
               onClick={() => {
                 void handleDownloadResourcePreview(pointResourcePreviewGrid, 'point')
               }}
-            >
-              下载图片
-            </button>
+            >{t("下载图片")}</button>
           </div>
         </div>
       </section>
@@ -1229,14 +1217,12 @@ export function LevelProductionPreviewPanel({
       {replacementPanel ? (
         <section className="level-production-replacement-panel" role="dialog" aria-modal="true">
           <div className="level-production-replacement-header">
-            <h3>更换豆子资源 #{replacementPanel.colorIndex}</h3>
-            <button type="button" onClick={() => setReplacementPanel(null)}>
-              取消
-            </button>
+            <h3>{t("更换豆子资源 #")}{replacementPanel.colorIndex}</h3>
+            <button type="button" onClick={() => setReplacementPanel(null)}>{t("取消")}</button>
           </div>
           <div className="level-production-replacement-colors">
             <div className="level-production-replacement-color">
-              <span>当前颜色</span>
+              <span>{t("当前颜色")}</span>
               <div
                 className="level-production-replacement-swatch"
                 style={{
@@ -1248,7 +1234,7 @@ export function LevelProductionPreviewPanel({
               <strong>{colorToHex(currentReplacementColor)}</strong>
             </div>
             <div className="level-production-replacement-color">
-              <span>新选择颜色</span>
+              <span>{t("新选择颜色")}</span>
               <div
                 className="level-production-replacement-swatch"
                 style={{
@@ -1278,9 +1264,9 @@ export function LevelProductionPreviewPanel({
                   }
                 >
                   {state4?.url ? (
-                    <img alt={`${item.resourceName} 4号资源`} src={state4.url} />
+                    <img alt={t("{0} 4号资源", item.resourceName)} src={state4.url} />
                   ) : (
-                    <span className="level-production-state-missing">缺失 4</span>
+                    <span className="level-production-state-missing">{t("缺失 4")}</span>
                   )}
                   <span>{item.resourceName}</span>
                   <span>{hexColor}</span>
@@ -1293,9 +1279,7 @@ export function LevelProductionPreviewPanel({
               type="button"
               onClick={confirmReplacement}
               disabled={!replacementPanel.selectedResourceName}
-            >
-              确认
-            </button>
+            >{t("确认")}</button>
           </div>
         </section>
       ) : null}
@@ -1310,7 +1294,7 @@ export function LevelProductionPreviewPanel({
               className={`level-production-match level-production-match--${match.confidence}`}
             >
               <span>#{match.colorIndex}</span>
-              <span>{match.resourceName ?? '未匹配'}</span>
+              <span>{match.resourceName ?? t("未匹配")}</span>
               <span>{match.confidence}</span>
               <span>{match.distance === null ? '-' : match.distance.toFixed(1)}</span>
               <div className="level-production-state-images">
@@ -1322,23 +1306,21 @@ export function LevelProductionPreviewPanel({
                       <span>{stateCode}</span>
                       {stateAsset?.url ? (
                         <img
-                          alt={`${match.resourceName ?? '未匹配'} 状态 ${stateCode}`}
+                          alt={t("{0} 状态 {1}", match.resourceName ?? t("未匹配"), stateCode)}
                           src={stateAsset.url}
                         />
                       ) : (
-                        <span className="level-production-state-missing">缺失</span>
+                        <span className="level-production-state-missing">{t("缺失")}</span>
                       )}
                     </div>
                   )
                 })}
               </div>
-              <button type="button" onClick={() => openReplacementPanel(match)}>
-                更换
-              </button>
+              <button type="button" onClick={() => openReplacementPanel(match)}>{t("更换")}</button>
               <input
-                aria-label={`手动更换颜色 ${match.colorIndex} 的资源`}
+                aria-label={t("手动更换颜色 {0} 的资源", match.colorIndex)}
                 value={manualResourceNames[match.colorIndex] ?? ''}
-                placeholder="手动资源组名"
+                placeholder={t("手动资源组名")}
                 onChange={(event) => {
                   const nextResourceName = event.target.value
                   setManualResourceName(match.colorIndex, nextResourceName)

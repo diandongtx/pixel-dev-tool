@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import type { GridData, RGBColor } from '../types/grid'
 import type { PixelConfigItem } from '../types/pixelConfig'
@@ -34,7 +35,7 @@ const colorToHex = (color: RGBColor | null | undefined): string => {
 }
 
 const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : '未知错误'
+  error instanceof Error ? error.message : t("未知错误")
 
 export function LevelProductionWorkbench() {
   const mapInputRef = useRef<HTMLInputElement>(null)
@@ -46,7 +47,7 @@ export function LevelProductionWorkbench() {
     colorIndex: number
     selectedResourceName: string | null
   } | null>(null)
-  const [statusMessage, setStatusMessage] = useState('请导入 map.json，豆子资源会自动从 resource/grid 匹配。')
+  const [statusMessage, setStatusMessage] = useState(t("请导入 map.json，豆子资源会自动从 resource/grid 匹配。"))
 
   useEffect(() => {
     let isActive = true
@@ -58,10 +59,10 @@ export function LevelProductionWorkbench() {
         if (!isActive) return
 
         setCatalog(nextCatalog)
-        setStatusMessage(`已加载默认豆子资源目录：resource/grid，共 ${nextCatalog.length} 组。`)
+        setStatusMessage(t("已加载默认豆子资源目录：resource/grid，共 {0} 组。", nextCatalog.length))
       } catch (error: unknown) {
         if (!isActive) return
-        setStatusMessage(`默认豆子资源加载失败：${getErrorMessage(error)}`)
+        setStatusMessage(t("默认豆子资源加载失败：{0}", getErrorMessage(error)))
       }
     }
 
@@ -128,9 +129,9 @@ export function LevelProductionWorkbench() {
       })
       const thumbnailDataUrl = await buildBeadThumbnailDataUrl(mapGrid, effectiveMatches, catalog)
       await saveLevelWorkspaceThumbnail(pixelConfigWithResources.name, thumbnailDataUrl)
-      setStatusMessage(`已保存草稿：${pixelConfigWithResources.name}`)
+      setStatusMessage(t("已保存草稿：{0}", pixelConfigWithResources.name))
     } catch (error: unknown) {
-      setStatusMessage(`保存草稿失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("保存草稿失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -164,9 +165,9 @@ export function LevelProductionWorkbench() {
       setPixelConfigDraft(draft)
       setManualResourceNames({})
       setReplacementPanel(null)
-      setStatusMessage(`已导入 ${draft.name}，正在使用默认豆子资源匹配。`)
+      setStatusMessage(t("已导入 {0}，正在使用默认豆子资源匹配。", draft.name))
     } catch (error: unknown) {
-      setStatusMessage(`导入失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("导入失败：{0}", getErrorMessage(error)))
     } finally {
       event.target.value = ''
     }
@@ -220,47 +221,39 @@ export function LevelProductionWorkbench() {
             void handleMapImport(event)
           }}
         />
-        <button type="button" onClick={() => mapInputRef.current?.click()}>
-          导入 map
-        </button>
+        <button type="button" onClick={() => mapInputRef.current?.click()}>{t("导入 map")}</button>
         <button
           type="button"
           onClick={handleExportMissingList}
           disabled={effectiveMatches.length === 0}
-        >
-          导出低置信度/未匹配清单
-        </button>
+        >{t("导出低置信度/未匹配清单")}</button>
         <button
           type="button"
           onClick={handleExportPixelConfigDraft}
           disabled={!pixelConfigWithResources}
-        >
-          导出 pixelconfig 草稿
-        </button>
+        >{t("导出 pixelconfig 草稿")}</button>
         <button
           type="button"
           onClick={() => {
             void handleSaveDraft()
           }}
           disabled={!pixelConfigWithResources}
-        >
-          保存草稿
-        </button>
+        >{t("保存草稿")}</button>
       </div>
 
       <div className="pixel-config-status">{statusMessage}</div>
       <div className="level-production-summary">
-        <div>当前图片：{pixelConfigDraft?.name ?? '-'}</div>
-        <div>颜色数量：{mapGrid?.colors.length ?? 0}</div>
-        <div>默认资源组数量：{catalog.length}</div>
+        <div>{t("当前图片：")}{pixelConfigDraft?.name ?? '-'}</div>
+        <div>{t("颜色数量：")}{mapGrid?.colors.length ?? 0}</div>
+        <div>{t("默认资源组数量：")}{catalog.length}</div>
       </div>
 
       {mapGrid ? (
         <section className="level-production-preview-section">
-          <h3>map 预览</h3>
+          <h3>{t("map 预览")}</h3>
           <div className="level-production-preview-pair">
             <div className="level-production-preview-panel">
-              <h4>原色像素预览</h4>
+              <h4>{t("原色像素预览")}</h4>
               <div
                 data-testid="level-production-color-preview"
                 className="level-production-map-preview"
@@ -284,7 +277,7 @@ export function LevelProductionWorkbench() {
               </div>
             </div>
             <div className="level-production-preview-panel">
-              <h4>豆子资源预览</h4>
+              <h4>{t("豆子资源预览")}</h4>
               <div
                 data-testid="level-production-bead-preview"
                 className="level-production-map-preview"
@@ -306,7 +299,7 @@ export function LevelProductionWorkbench() {
                       >
                         {previewUrl ? (
                           <img
-                            alt={`预览格子 ${rowIndex + 1}-${columnIndex + 1} ${match?.resourceName ?? '未匹配'}`}
+                            alt={t("预览格子 {0}-{1} {2}", rowIndex + 1, columnIndex + 1, match?.resourceName ?? t("未匹配"))}
                             src={previewUrl}
                           />
                         ) : null}
@@ -323,14 +316,12 @@ export function LevelProductionWorkbench() {
       {replacementPanel ? (
         <section className="level-production-replacement-panel" role="dialog" aria-modal="true">
           <div className="level-production-replacement-header">
-            <h3>更换豆子资源 #{replacementPanel.colorIndex}</h3>
-            <button type="button" onClick={() => setReplacementPanel(null)}>
-              取消
-            </button>
+            <h3>{t("更换豆子资源 #")}{replacementPanel.colorIndex}</h3>
+            <button type="button" onClick={() => setReplacementPanel(null)}>{t("取消")}</button>
           </div>
           <div className="level-production-replacement-colors">
             <div className="level-production-replacement-color">
-              <span>当前颜色</span>
+              <span>{t("当前颜色")}</span>
               <div
                 className="level-production-replacement-swatch"
                 style={{
@@ -342,7 +333,7 @@ export function LevelProductionWorkbench() {
               <strong>{colorToHex(currentReplacementColor)}</strong>
             </div>
             <div className="level-production-replacement-color">
-              <span>新选择颜色</span>
+              <span>{t("新选择颜色")}</span>
               <div
                 className="level-production-replacement-swatch"
                 style={{
@@ -372,9 +363,9 @@ export function LevelProductionWorkbench() {
                   }
                 >
                   {state4?.url ? (
-                    <img alt={`${item.resourceName} 4号资源`} src={state4.url} />
+                    <img alt={t("{0} 4号资源", item.resourceName)} src={state4.url} />
                   ) : (
-                    <span className="level-production-state-missing">缺失 4</span>
+                    <span className="level-production-state-missing">{t("缺失 4")}</span>
                   )}
                   <span>{item.resourceName}</span>
                   <span>{hexColor}</span>
@@ -387,9 +378,7 @@ export function LevelProductionWorkbench() {
               type="button"
               onClick={confirmReplacement}
               disabled={!replacementPanel.selectedResourceName}
-            >
-              确认
-            </button>
+            >{t("确认")}</button>
           </div>
         </section>
       ) : null}
@@ -404,7 +393,7 @@ export function LevelProductionWorkbench() {
               className={`level-production-match level-production-match--${match.confidence}`}
             >
               <span>#{match.colorIndex}</span>
-              <span>{match.resourceName ?? '未匹配'}</span>
+              <span>{match.resourceName ?? t("未匹配")}</span>
               <span>{match.confidence}</span>
               <span>{match.distance === null ? '-' : match.distance.toFixed(1)}</span>
               <div className="level-production-state-images">
@@ -416,23 +405,21 @@ export function LevelProductionWorkbench() {
                       <span>{stateCode}</span>
                       {stateAsset?.url ? (
                         <img
-                          alt={`${match.resourceName ?? '未匹配'} 状态 ${stateCode}`}
+                          alt={t("{0} 状态 {1}", match.resourceName ?? t("未匹配"), stateCode)}
                           src={stateAsset.url}
                         />
                       ) : (
-                        <span className="level-production-state-missing">缺失</span>
+                        <span className="level-production-state-missing">{t("缺失")}</span>
                       )}
                     </div>
                   )
                 })}
               </div>
-              <button type="button" onClick={() => openReplacementPanel(match)}>
-                更换
-              </button>
+              <button type="button" onClick={() => openReplacementPanel(match)}>{t("更换")}</button>
               <input
-                aria-label={`手动替换颜色 ${match.colorIndex} 的资源`}
+                aria-label={t("手动替换颜色 {0} 的资源", match.colorIndex)}
                 value={manualResourceNames[match.colorIndex] ?? ''}
-                placeholder="手动资源组名"
+                placeholder={t("手动资源组名")}
                 onChange={(event) => {
                   setManualResourceNames((previous) => ({
                     ...previous,

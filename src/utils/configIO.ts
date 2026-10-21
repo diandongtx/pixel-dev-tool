@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import type { GridData, RGBColor } from '../types/grid'
 import type { DailyLevelConfigItem, LevelConfigFile, LevelConfigItem, ManagedLevelConfigItem } from '../types/levelConfig'
 import type { PixelConfigFile, PixelConfigItem } from '../types/pixelConfig'
@@ -19,18 +20,18 @@ const isFiniteInteger = (value: unknown): value is number =>
 
 const ensureMatrix = (value: unknown, label: string): number[][] => {
   if (!Array.isArray(value)) {
-    throw new Error(`${label} 必须是二维数组`)
+    throw new Error(t("{0} 必须是二维数组", label))
   }
 
   return value.map((row, rowIndex) => {
     if (!Array.isArray(row)) {
-      throw new Error(`${label} 的第 ${rowIndex + 1} 行不是数组`)
+      throw new Error(t("{0} 的第 {1} 行不是数组", label, rowIndex + 1))
     }
 
     return row.map((cell, cellIndex) => {
       const normalized = Number(cell)
       if (!Number.isInteger(normalized)) {
-        throw new Error(`${label} 的第 ${rowIndex + 1} 行第 ${cellIndex + 1} 列不是整数`)
+        throw new Error(t("{0} 的第 {1} 行第 {2} 列不是整数", label, rowIndex + 1, cellIndex + 1))
       }
       return normalized
     })
@@ -39,13 +40,13 @@ const ensureMatrix = (value: unknown, label: string): number[][] => {
 
 const ensureTuple = (value: unknown, label: string): [number, number] => {
   if (!Array.isArray(value) || value.length !== 2) {
-    throw new Error(`${label} 必须是长度为 2 的数组`)
+    throw new Error(t("{0} 必须是长度为 2 的数组", label))
   }
 
   const left = Number(value[0])
   const right = Number(value[1])
   if (!Number.isInteger(left) || !Number.isInteger(right)) {
-    throw new Error(`${label} 的值必须是整数`)
+    throw new Error(t("{0} 的值必须是整数", label))
   }
 
   return [left, right]
@@ -64,7 +65,7 @@ const normalizeIntegerInRange = (
 
   const normalized = Number(value)
   if (!Number.isInteger(normalized) || normalized < min || normalized > max) {
-    throw new Error(`${label} 必须是 ${min}-${max} 的整数`)
+    throw new Error(t("{0} 必须是 {1}-{2} 的整数", label, min, max))
   }
 
   return normalized
@@ -72,12 +73,12 @@ const normalizeIntegerInRange = (
 
 const ensureColors = (value: unknown): RGBColor[] => {
   if (!Array.isArray(value) || value.length === 0) {
-    throw new Error('colors 不能为空')
+    throw new Error(t("colors 不能为空"))
   }
 
   return value.map((item, index) => {
     if (!item || typeof item !== 'object') {
-      throw new Error(`colors 第 ${index + 1} 项无效`)
+      throw new Error(t("colors 第 {0} 项无效", index + 1))
     }
 
     const color = item as Record<string, unknown>
@@ -86,7 +87,7 @@ const ensureColors = (value: unknown): RGBColor[] => {
     const b = Number(color.b)
     const a = Number(color.a)
     if ([r, g, b, a].some((channel) => !Number.isFinite(channel))) {
-      throw new Error(`colors 第 ${index + 1} 项存在非法颜色值`)
+      throw new Error(t("colors 第 {0} 项存在非法颜色值", index + 1))
     }
 
     return { r, g, b, a }
@@ -171,19 +172,19 @@ export const parseGridDataFile = (text: string, fallbackFileName = 'grid'): Grid
   const width = Number(parsed.width)
   const height = Number(parsed.height)
   if (!Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {
-    throw new Error('网格文件中的 width/height 非法')
+    throw new Error(t("网格文件中的 width/height 非法"))
   }
 
   const rawGrid = Array.isArray(parsed.grid) ? parsed.grid : parsed.colorIndices
   const colorIndices = ensureMatrix(rawGrid, 'grid')
   if (colorIndices.length !== height || colorIndices.some((row) => row.length !== width)) {
-    throw new Error('网格尺寸与 width/height 不一致')
+    throw new Error(t("网格尺寸与 width/height 不一致"))
   }
 
   const colors = ensureColors(parsed.colors)
   const maxIndex = getMatrixMaxIndex(colorIndices)
   if (maxIndex >= colors.length) {
-    throw new Error(`存在超出颜色表范围的索引 ${maxIndex}`)
+    throw new Error(t("存在超出颜色表范围的索引 {0}", maxIndex))
   }
 
   const fileName = typeof parsed.fileName === 'string' && parsed.fileName.trim()
@@ -203,22 +204,22 @@ export const parseGridDataFile = (text: string, fallbackFileName = 'grid'): Grid
 // 透传所有已有字段，补齐/校验 v0.5 新字段默认值。用于读取时统一，保存路径无需再校验。
 export const normalizePixelConfigItems = (items: unknown): PixelConfigFile => {
   if (!Array.isArray(items)) {
-    throw new Error('pixelconfig 数据必须是数组')
+    throw new Error(t("pixelconfig 数据必须是数组"))
   }
 
   return items.map((item, index) => {
     if (!item || typeof item !== 'object') {
-      throw new Error(`pixelconfig 第 ${index + 1} 项无效`)
+      throw new Error(t("pixelconfig 第 {0} 项无效", index + 1))
     }
 
     const config = item as Record<string, unknown>
     const id = Number(config.id)
     const name = String(config.name ?? '').trim()
     if (!Number.isInteger(id)) {
-      throw new Error(`pixelconfig 第 ${index + 1} 项 id 非法`)
+      throw new Error(t("pixelconfig 第 {0} 项 id 非法", index + 1))
     }
     if (!name) {
-      throw new Error(`pixelconfig 第 ${index + 1} 项 name 不能为空`)
+      throw new Error(t("pixelconfig 第 {0} 项 name 不能为空", index + 1))
     }
 
     const localPixelResource = Array.isArray(config.localPixelResource)
@@ -258,19 +259,19 @@ export const serializePixelConfigFile = (items: PixelConfigFile): string =>
 // 这里主要保证难度落在 1-5、字段稳定，作为读取兜底。
 export const normalizeLevelConfigItems = (items: unknown): LevelConfigFile => {
   if (!Array.isArray(items)) {
-    throw new Error('levelconfig 数据必须是数组')
+    throw new Error(t("levelconfig 数据必须是数组"))
   }
 
   return items.map((item, index) => {
     if (!item || typeof item !== 'object') {
-      throw new Error(`levelconfig 第 ${index + 1} 项无效`)
+      throw new Error(t("levelconfig 第 {0} 项无效", index + 1))
     }
 
     const config = item as Record<string, unknown>
     const numericField = (key: string): number => {
       const value = Number(config[key])
       if (!Number.isFinite(value)) {
-        throw new Error(`levelconfig 第 ${index + 1} 项字段 ${key} 非法`)
+        throw new Error(t("levelconfig 第 {0} 项字段 {1} 非法", index + 1, key))
       }
       return value
     }
@@ -305,14 +306,14 @@ export const isDailyLevelDate = (value: string): boolean => {
 }
 
 export const normalizeDailyLevelConfigItems = (items: unknown): DailyLevelConfigItem[] => {
-  if (!Array.isArray(items)) throw new Error('dailylevelconfig 数据必须是数组')
+  if (!Array.isArray(items)) throw new Error(t("dailylevelconfig 数据必须是数组"))
   const seen = new Set<string>()
   return items.map((item, index) => {
     const id = item?.id
     if (typeof id !== 'string' || !isDailyLevelDate(id)) {
-      throw new Error(`dailylevelconfig 第 ${index + 1} 项 ID 必须是有效日期（YYYY-MM-DD）`)
+      throw new Error(t("dailylevelconfig 第 {0} 项 ID 必须是有效日期（YYYY-MM-DD）", index + 1))
     }
-    if (seen.has(id)) throw new Error(`dailylevelconfig 日期 ${id} 重复`)
+    if (seen.has(id)) throw new Error(t("dailylevelconfig 日期 {0} 重复", id))
     seen.add(id)
     // Reuse common field validation while retaining the daily file's date ID and type.
     const [normalized] = normalizeLevelConfigItems([{ ...item, id: index + 1 }])

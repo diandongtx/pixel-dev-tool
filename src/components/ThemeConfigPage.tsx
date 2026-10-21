@@ -1,3 +1,5 @@
+import { themeDisplayName } from '../utils/themeConfig'
+import { t } from '../i18n'
 import React, { useEffect, useState } from 'react'
 import type { ThemeConfigItem } from '../types/themeConfig'
 import {
@@ -10,7 +12,7 @@ const INTERNAL_THEME_CONFIG_PATH = 'data/level-workspace/config/themeconfig.json
 const THEME_KEY_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : '未知错误'
+  error instanceof Error ? error.message : t("未知错误")
 
 const createEmptyTheme = (items: ThemeConfigItem[]): ThemeConfigItem => ({
   theme: '',
@@ -21,16 +23,16 @@ const createEmptyTheme = (items: ThemeConfigItem[]): ThemeConfigItem => ({
 export const ThemeConfigPage: React.FC = () => {
   const [items, setItems] = useState<ThemeConfigItem[]>([])
   const [draft, setDraft] = useState<ThemeConfigItem>(() => createEmptyTheme([]))
-  const [statusMessage, setStatusMessage] = useState('加载内部 themeconfig 后可编辑主题列表。')
+  const [statusMessage, setStatusMessage] = useState(t("加载内部 themeconfig 后可编辑主题列表。"))
 
   const loadThemeConfig = async () => {
     try {
       const themes = sortThemeConfig(await readLevelWorkspaceThemeConfig())
       setItems(themes)
       setDraft(createEmptyTheme(themes))
-      setStatusMessage(`已加载内部 themeconfig，共 ${themes.length} 个主题。`)
+      setStatusMessage(t("已加载内部 themeconfig，共 {0} 个主题。", themes.length))
     } catch (error: unknown) {
-      setStatusMessage(`加载内部 themeconfig 失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("加载内部 themeconfig 失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -40,16 +42,16 @@ export const ThemeConfigPage: React.FC = () => {
 
   const validateTheme = (item: ThemeConfigItem, existingItems: ThemeConfigItem[], originalKey?: string): string | null => {
     if (!THEME_KEY_PATTERN.test(item.theme)) {
-      return '主题 key 必须使用英文小写、数字或连字符，且不能以连字符开头或结尾。'
+      return t("主题 key 必须使用英文小写、数字或连字符，且不能以连字符开头或结尾。")
     }
     if (!item.themeName.trim()) {
-      return '主题显示名不能为空。'
+      return t("主题显示名不能为空。")
     }
     if (!Number.isInteger(item.sortOrder)) {
-      return '排序必须是整数。'
+      return t("排序必须是整数。")
     }
     if (existingItems.some((existing) => existing.theme === item.theme && existing.theme !== originalKey)) {
-      return `主题 key ${item.theme} 已存在。`
+      return t("主题 key {0} 已存在。", item.theme)
     }
 
     return null
@@ -85,15 +87,15 @@ export const ThemeConfigPage: React.FC = () => {
     const nextItems = sortThemeConfig([...items, nextTheme])
     setItems(nextItems)
     setDraft(createEmptyTheme(nextItems))
-    setStatusMessage(`已新增主题 ${nextTheme.theme}，保存后写入 ${INTERNAL_THEME_CONFIG_PATH}。`)
+    setStatusMessage(t("已新增主题 {0}，保存后写入 {1}。", nextTheme.theme, INTERNAL_THEME_CONFIG_PATH))
   }
 
   const handleDeleteTheme = (theme: string) => {
-    const confirmed = window.confirm(`确认删除主题 ${theme} 吗？已标该主题的图片不会被回溯修改。`)
+    const confirmed = window.confirm(t("确认删除主题 {0} 吗？已标该主题的图片不会被回溯修改。", theme))
     if (!confirmed) return
 
     setItems((previous) => previous.filter((item) => item.theme !== theme))
-    setStatusMessage(`已从主题列表移除 ${theme}，已标该 key 的图片不受影响。`)
+    setStatusMessage(t("已从主题列表移除 {0}，已标该 key 的图片不受影响。", theme))
   }
 
   const handleSave = async () => {
@@ -113,9 +115,9 @@ export const ThemeConfigPage: React.FC = () => {
       })))
       await saveLevelWorkspaceThemeConfig(sortedItems)
       setItems(sortedItems)
-      setStatusMessage(`已保存内部 themeconfig：${INTERNAL_THEME_CONFIG_PATH}，共 ${sortedItems.length} 个主题。`)
+      setStatusMessage(t("已保存内部 themeconfig：{0}，共 {1} 个主题。", INTERNAL_THEME_CONFIG_PATH, sortedItems.length))
     } catch (error: unknown) {
-      setStatusMessage(`保存内部 themeconfig 失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("保存内部 themeconfig 失败：{0}", getErrorMessage(error)))
     }
   }
 
@@ -127,35 +129,29 @@ export const ThemeConfigPage: React.FC = () => {
           onClick={() => {
             void loadThemeConfig()
           }}
-        >
-          加载内部 themeconfig
-        </button>
+        >{t("加载内部 themeconfig")}</button>
         <button
           type="button"
           onClick={() => {
             void handleSave()
           }}
           disabled={items.length === 0}
-        >
-          保存内部 themeconfig
-        </button>
+        >{t("保存内部 themeconfig")}</button>
       </div>
 
       <div className="pixel-config-status">{statusMessage}</div>
 
       <div className="level-config-summary">
-        <div>配置路径：{INTERNAL_THEME_CONFIG_PATH}</div>
-        <div>主题数量：{items.length}</div>
+        <div>{t("配置路径：")}{INTERNAL_THEME_CONFIG_PATH}</div>
+        <div>{t("主题数量：")}{items.length}</div>
       </div>
 
       <div className="pixel-config-card">
         <div className="pixel-config-card-header">
           <div className="pixel-config-card-title">
-            <span>新增主题</span>
+            <span>{t("新增主题")}</span>
           </div>
-          <button type="button" onClick={handleAddTheme}>
-            新增
-          </button>
+          <button type="button" onClick={handleAddTheme}>{t("新增")}</button>
         </div>
         <div className="pixel-config-form-grid">
           <label>
@@ -200,11 +196,9 @@ export const ThemeConfigPage: React.FC = () => {
             <div className="pixel-config-card-header">
               <div className="pixel-config-card-title">
                 <span>{item.theme}</span>
-                <span>{item.themeName}</span>
+                <span>{themeDisplayName(item)}</span>
               </div>
-              <button type="button" onClick={() => handleDeleteTheme(item.theme)}>
-                删除
-              </button>
+              <button type="button" onClick={() => handleDeleteTheme(item.theme)}>{t("删除")}</button>
             </div>
             <div className="pixel-config-form-grid">
               <label>

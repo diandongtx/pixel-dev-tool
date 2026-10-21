@@ -1,3 +1,4 @@
+import { t } from '../i18n'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { ManagedLevelConfigItem as LevelConfigItem } from '../types/levelConfig'
 import type { PixelConfigItem } from '../types/pixelConfig'
@@ -29,12 +30,12 @@ const DEFAULT_PAGE_SIZE = 50
 const THUMBNAIL_CELL_SIZE = 6
 
 const LEVEL_TYPE_OPTIONS = [
-  { value: 1, label: '主线关卡 (type=1)' },
-  { value: 2, label: '每日挑战 (dailylevelconfig)' }
+  { value: 1, label: t("主线关卡 (type=1)") },
+  { value: 2, label: t("每日挑战 (dailylevelconfig)") }
 ] as const
 
 const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : '未知错误'
+  error instanceof Error ? error.message : t("未知错误")
 
 /**
  * 分页器（Paginator）：上一页/下一页 + 当前页码/总页数 + 跳页输入。
@@ -49,22 +50,14 @@ const Pager: React.FC<{
   onJump: (page: number) => void
 }> = ({ pageIndex, totalPages, totalItems, onPrev, onNext, onJump }) => (
   <div className="bead-region-pager">
-    <button type="button" onClick={onPrev} disabled={pageIndex <= 0}>
-      上一页
-    </button>
-    <span>
-      第 {pageIndex + 1} / {totalPages} 页（共 {totalItems} 关）
-    </span>
+    <button type="button" onClick={onPrev} disabled={pageIndex <= 0}>{t("上一页")}</button>
+    <span>{t("第")}{' '}{pageIndex + 1} / {totalPages}{' '}{t("页（共")}{' '}{totalItems}{' '}{t("关）")}</span>
     <button
       type="button"
       onClick={onNext}
       disabled={pageIndex >= totalPages - 1}
-    >
-      下一页
-    </button>
-    <label className="bead-region-field">
-      跳转
-      <input
+    >{t("下一页")}</button>
+    <label className="bead-region-field">{t("跳转")}<input
         type="number"
         min={1}
         max={totalPages}
@@ -123,16 +116,16 @@ const LevelStatsItem: React.FC<{ row: LevelStatsRow }> = ({ row }) => {
         {pixelConfig ? (
           <>
             <div className="bead-region-thumb">
-              <div className="bead-region-thumb-label">成品图</div>
+              <div className="bead-region-thumb-label">{t("成品图")}</div>
               <canvas ref={pixelCanvasRef} className="bead-region-thumb-canvas" />
             </div>
             <div className="bead-region-thumb">
-              <div className="bead-region-thumb-label">乱序图（统计依据）</div>
+              <div className="bead-region-thumb-label">{t("乱序图（统计依据）")}</div>
               <canvas ref={initCanvasRef} className="bead-region-thumb-canvas" />
             </div>
           </>
         ) : (
-          <div className="bead-region-thumb-empty">无图</div>
+          <div className="bead-region-thumb-empty">{t("无图")}</div>
         )}
       </div>
       <div className="bead-region-stats">
@@ -141,24 +134,23 @@ const LevelStatsItem: React.FC<{ row: LevelStatsRow }> = ({ row }) => {
           <span className="bead-region-level-name">
             {pixelConfig?.name ?? `pixel ${level.pixelImageId}`}
           </span>
-          <span className="bead-region-level-meta">难度 {level.difficulty}</span>
+          <span className="bead-region-level-meta">{t("难度")}{' '}{level.difficulty}</span>
         </div>
         {stats ? (
           <>
-            <div className="bead-region-summary">
-              豆子 {stats.totalBeads} · 连通区域 {stats.regionCount} · 区域大小种数 {histogramEntries.length}
-              <span className="bead-region-summary-hint">（按乱序图同色 8 连通）</span>
+            <div className="bead-region-summary">{t("豆子")}{' '}{stats.totalBeads}{' '}{t("· 连通区域")}{' '}{stats.regionCount}{' '}{t("· 区域大小种数")}{' '}{histogramEntries.length}
+              <span className="bead-region-summary-hint">{t("（按乱序图同色 8 连通）")}</span>
             </div>
             <div className="bead-region-histogram">
               {histogramEntries.map(({ size, count }) => (
                 <span key={size} className="bead-region-hist-chip">
-                  [{size}颗]×{count}
+                  [{size}{t("颗]×")}{count}
                 </span>
               ))}
             </div>
           </>
         ) : (
-          <div className="bead-region-stats-empty">{reason ?? '无统计数据'}</div>
+          <div className="bead-region-stats-empty">{reason ?? t("无统计数据")}</div>
         )}
       </div>
     </div>
@@ -171,14 +163,14 @@ export const LevelBeadRegionPage: React.FC<LevelBeadRegionPageProps> = ({
   const [levelType, setLevelType] = useState<number>(defaultLevelType)
   const [rows, setRows] = useState<LevelStatsRow[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [statusMessage, setStatusMessage] = useState('请点击「加载 levelconfig」开始统计。')
+  const [statusMessage, setStatusMessage] = useState(t("请点击「加载 levelconfig」开始统计。"))
   const [searchKeyword, setSearchKeyword] = useState('')
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE)
   const [pageIndex, setPageIndex] = useState(0)
 
   const handleLoad = async () => {
     setIsLoading(true)
-    setStatusMessage('正在加载 levelconfig 与 pixelconfig…')
+    setStatusMessage(t("正在加载 levelconfig 与 pixelconfig…"))
     try {
       const [levelConfigItems, pixelConfigItems] = await Promise.all([
         readLevelWorkspaceLevelConfig(levelType),
@@ -197,10 +189,10 @@ export const LevelBeadRegionPage: React.FC<LevelBeadRegionPageProps> = ({
       const nextRows: LevelStatsRow[] = filteredLevels.map((level) => {
         const pixelConfig = pixelMap.get(level.pixelImageId) ?? null
         if (!pixelConfig) {
-          return { level, pixelConfig: null, stats: null, reason: '未关联到 pixelconfig（pixelImageId 缺失）' }
+          return { level, pixelConfig: null, stats: null, reason: t("未关联到 pixelconfig（pixelImageId 缺失）") }
         }
         if (!Array.isArray(pixelConfig.initPixel) || pixelConfig.initPixel.length === 0) {
-          return { level, pixelConfig, stats: null, reason: '该像素图无 initPixel 乱序数据' }
+          return { level, pixelConfig, stats: null, reason: t("该像素图无 initPixel 乱序数据") }
         }
         const stats = computeBeadRegionStats(pixelConfig.initPixel)
         return { level, pixelConfig, stats, reason: null }
@@ -210,10 +202,10 @@ export const LevelBeadRegionPage: React.FC<LevelBeadRegionPageProps> = ({
       setPageIndex(0)
       const totalRegions = nextRows.reduce((sum, r) => sum + (r.stats?.regionCount ?? 0), 0)
       setStatusMessage(
-        `已加载 ${nextRows.length} 个关卡，pixelconfig ${pixelConfigItems.length} 条；累计连通区域 ${totalRegions} 个。`
+        t("已加载 {0} 个关卡，pixelconfig {1} 条；累计连通区域 {2} 个。", nextRows.length, pixelConfigItems.length, totalRegions)
       )
     } catch (error: unknown) {
-      setStatusMessage(`加载失败：${getErrorMessage(error)}`)
+      setStatusMessage(t("加载失败：{0}", getErrorMessage(error)))
       setRows([])
     } finally {
       setIsLoading(false)
@@ -248,9 +240,7 @@ export const LevelBeadRegionPage: React.FC<LevelBeadRegionPageProps> = ({
   return (
     <div className="bead-region-page">
       <div className="bead-region-toolbar">
-        <label className="bead-region-field">
-          关卡类型
-          <select
+        <label className="bead-region-field">{t("关卡类型")}<select
             value={levelType}
             onChange={(e) => setLevelType(Number.parseInt(e.target.value, 10) || 1)}
             disabled={isLoading}
@@ -269,23 +259,19 @@ export const LevelBeadRegionPage: React.FC<LevelBeadRegionPageProps> = ({
           }}
           disabled={isLoading}
         >
-          {isLoading ? '加载中…' : '加载 levelconfig'}
+          {isLoading ? t("加载中…") : t("加载 levelconfig")}
         </button>
-        <label className="bead-region-field">
-          搜索（关卡 ID / 像素图名称）
-          <input
+        <label className="bead-region-field">{t("搜索（关卡 ID / 像素图名称）")}<input
             type="text"
             value={searchKeyword}
             onChange={(e) => {
               setSearchKeyword(e.target.value)
               setPageIndex(0)
             }}
-            placeholder="输入 ID 或名称…"
+            placeholder={t("输入 ID 或名称…")}
           />
         </label>
-        <label className="bead-region-field">
-          每页
-          <select
+        <label className="bead-region-field">{t("每页")}<select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number.parseInt(e.target.value, 10) || DEFAULT_PAGE_SIZE)
@@ -316,7 +302,7 @@ export const LevelBeadRegionPage: React.FC<LevelBeadRegionPageProps> = ({
 
       {filteredRows.length === 0 ? (
         <div className="pixel-config-empty-main">
-          {rows.length === 0 ? '尚未加载数据，请先点击「加载 levelconfig」。' : '没有匹配搜索条件的关卡。'}
+          {rows.length === 0 ? t("尚未加载数据，请先点击「加载 levelconfig」。") : t("没有匹配搜索条件的关卡。")}
         </div>
       ) : (
         <div className="bead-region-list">
